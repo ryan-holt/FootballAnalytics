@@ -16,7 +16,6 @@ def initialize_app(app):
     blueprint = Blueprint('api', __name__, url_prefix='/api')
     api.init_app(blueprint)
     api.add_namespace(client_ns)
-    # api.add_namespace(blog_categories_namespace)
     app.register_blueprint(blueprint)
     db.init_app(app)
 
