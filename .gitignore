@@ -57,3 +57,6 @@ ENV/
 /migrations
 
 /config.py
+
+#vscode
+.vscode
