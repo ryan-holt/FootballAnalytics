@@ -13,6 +13,9 @@ admin = api.model('Admin',
 @ns.route('/')
 class AdminList(Resource):
     def get(self):
+        """
+        Gets all admins
+        """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getAdmins")
             results = cursor.fetchall()
@@ -20,6 +23,9 @@ class AdminList(Resource):
 
     @api.expect(admin, validate=True)
     def post(self):
+        """
+        Adds a new admin
+        """
         data = request.json
         name = data.get('username')
         password = data.get('password')
@@ -36,6 +42,9 @@ class AdminList(Resource):
 @ns.route('/<string:username>')
 class Admin(Resource):
     def get(self, username):
+        """
+        Gets the specified admin
+        """
         if username:
             with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
                 cursor.callproc("getAdminByUsername", [username])
@@ -44,6 +53,9 @@ class Admin(Resource):
 
     @api.expect(admin, validate=True)
     def put(self, username):
+        """
+        Updates the username of the specified admin
+        """
         data = request.json
         new_username = data.get('username')
         password = data.get('password')

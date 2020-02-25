@@ -12,6 +12,9 @@ client = api.model('Client', {'username': fields.String(description='the usernam
 @ns.route('/')
 class ClientList(Resource):
     def get(self):
+        """
+        Gets all clients
+        """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getClients")
             results = cursor.fetchall()
@@ -19,6 +22,9 @@ class ClientList(Resource):
 
     @api.expect(client, validate=True)
     def post(self):
+        """
+        Adds a new client
+        """
         data = request.json
         name = data.get('username')
         password = data.get('password')
@@ -36,6 +42,9 @@ class ClientList(Resource):
 @ns.route('/<string:username>')
 class Client(Resource):
     def get(self, username):
+        """
+        Gets the specified client
+        """
         if username:
             with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
                 cursor.callproc("getClientByUsername", [username])
@@ -44,6 +53,9 @@ class Client(Resource):
 
     @api.expect(client, validate=True)
     def put(self, username):
+        """
+        Updates the username of the specified client
+        """
         data = request.json
         new_username = data.get('username')
         password = data.get('password')
