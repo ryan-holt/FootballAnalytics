@@ -20,32 +20,35 @@ class IssueList(Resource):
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getIssues")
             results = cursor.fetchall()
-        return jsonify(results)
-
-@ns.route('/<int:issueID>')
-class IssueID(Resource):
-    def get(self, issueID):
-        """
-        Gets the specified issue by issue id
-        """
-        if issueID:
-            with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
-                cursor.callproc("getIssueByID", [issueID])
-                results = cursor.fetchall()
-            if results:
-                return jsonify(results)
-            else:
-                return {'message': 'no issues with such ID'}, 201
+        if results:
+            return jsonify(results)
+        else:
+            return {'message': 'no issues in the system'}, 201
 
 @ns.route('/<string:clientUsername>')
 class IssueUsername(Resource):
     def get(self, clientUsername):
         """
-        Gets the specified issue by client's username (reporter)
+        Gets issues by client's username (reporter)
         """
         if clientUsername:
             with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
                 cursor.callproc("getIssuesByClientUsername", [clientUsername])
+                results = cursor.fetchall()
+            if results:
+                return jsonify(results)
+            else:
+                return {'message': 'no issues found by client specified'}, 201
+
+@ns.route('/<string:clientUsername>/<int:clientIssueNumber>')
+class IssueID(Resource):
+    def get(self, clientUsername, clientIssueNumber):
+        """
+        Gets issue by client's username (reporter) and their issue number
+        """
+        if clientUsername:
+            with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
+                cursor.callproc("getIssueByID", [clientUsername, clientIssueNumber])
                 results = cursor.fetchall()
             if results:
                 return jsonify(results)
