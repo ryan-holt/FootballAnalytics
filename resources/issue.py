@@ -5,10 +5,9 @@ from flask_restplus import Resource, fields
 from restplus import api, db
 
 ns = api.namespace('issues', description='Operations related to system issues')
-client = api.model('Issue', 
+issue = api.model('Issue',
                 {
                     'clientUsername': fields.String(description='username of client who reported the issue', required=True, max_length=20),
-                    'issueID': fields.Integer(description='id of the issue', required=True),
                     'description': fields.String(description='description of the issue', required=True, max_length=200)
                 })
 

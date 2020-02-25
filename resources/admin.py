@@ -19,7 +19,10 @@ class AdminList(Resource):
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getAdmins")
             results = cursor.fetchall()
-        return jsonify(results)
+        if results:
+            return jsonify(results)
+        else:
+            return {'message': 'no admins in system'}, 201
 
     @api.expect(admin, validate=True)
     def post(self):
@@ -30,6 +33,10 @@ class AdminList(Resource):
         name = data.get('username')
         password = data.get('password')
         permission_level = data.get('permission_level')
+
+        if permission_level > 4:
+            return {'message': 'admin permission level domain is 1-4'}, 201
+
         connection = db.engine.raw_connection()
         try:
             with connection.cursor(MySQLdb.cursors.DictCursor) as cursor:
@@ -37,7 +44,7 @@ class AdminList(Resource):
                 connection.commit()
         finally:
             connection.close()
-        return {'message': 'client has been created successfully.'}, 201
+        return {'message': 'admin has been created successfully.'}, 201
 
 @ns.route('/<string:username>')
 class Admin(Resource):
@@ -49,7 +56,10 @@ class Admin(Resource):
             with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
                 cursor.callproc("getAdminByUsername", [username])
                 results = cursor.fetchall()
-            return jsonify(results)
+            if results:
+                return jsonify(results)
+            else:
+                return {'message': 'no admin with username specified'}, 201
 
     @api.expect(admin, validate=True)
     def put(self, username):
@@ -67,7 +77,7 @@ class Admin(Resource):
                 # TODO find way to see if it actually updated anyting in the query
                 connection.commit()
         except:
-            return {'message': 'failed to update client username.'}, 201
+            return {'message': 'failed to update admin username.'}, 201
         finally:
             connection.close()
-        return {'message': 'client username has been updated successfully.'}, 201
+        return {'message': 'admin username has been updated successfully.'}, 201

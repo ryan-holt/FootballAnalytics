@@ -73,14 +73,13 @@ DROP TABLE IF EXISTS `issue`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `issue` (
-  `clientUsername` varchar(45) NOT NULL,
+  `clientUsername` varchar(20) NOT NULL,
   `issueID` int(11) NOT NULL,
   `description` varchar(200) NOT NULL,
   `date` datetime NOT NULL,
+  PRIMARY KEY (`issueID`),
   KEY `clientUsername_idx` (`clientUsername`),
-  KEY `issueID_idx` (`issueID`),
-  CONSTRAINT `clientUsername` FOREIGN KEY (`clientUsername`) REFERENCES `client` (`username`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `issueID` FOREIGN KEY (`issueID`) REFERENCES `reviews` (`issueID`) ON DELETE RESTRICT ON UPDATE RESTRICT
+  CONSTRAINT `clientUsername` FOREIGN KEY (`clientUsername`) REFERENCES `client` (`username`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -102,12 +101,13 @@ DROP TABLE IF EXISTS `reviews`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `reviews` (
-  `adminUsername` varchar(45) NOT NULL,
+  `adminUsername` varchar(20) NOT NULL,
   `issueID` int(11) NOT NULL,
   `comment` varchar(200) NOT NULL,
-  PRIMARY KEY (`issueID`),
   KEY `adminUsername_idx` (`adminUsername`),
-  CONSTRAINT `adminUsername` FOREIGN KEY (`adminUsername`) REFERENCES `admin` (`username`) ON DELETE RESTRICT ON UPDATE RESTRICT
+  KEY `issueID_idx` (`issueID`),
+  CONSTRAINT `adminUsername` FOREIGN KEY (`adminUsername`) REFERENCES `admin` (`username`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `issueID` FOREIGN KEY (`issueID`) REFERENCES `issue` (`issueID`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -163,6 +163,28 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `addClient`(
     )
 BEGIN
 INSERT INTO client values(username, password, current_timestamp());
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `addIssue` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `addIssue`(
+	IN clientUsername VARCHAR(20),
+    IN description VARCHAR(200)
+    )
+BEGIN
+INSERT INTO issue values(clientUsername, FLOOR(RAND(1000)), description, current_timestamp());
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -300,7 +322,7 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getIssuesByClientUsername`(
-	IN clientUsername VARCHAR(25)
+	IN clientUsername VARCHAR(20)
 )
 BEGIN
 SELECT * FROM issue WHERE issue.clientUsername = clientUsername;
@@ -371,4 +393,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-02-24 20:15:30
+-- Dump completed on 2020-02-24 20:42:32
