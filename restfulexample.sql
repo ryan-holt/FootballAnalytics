@@ -74,10 +74,10 @@ DROP TABLE IF EXISTS `issue`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `issue` (
   `clientUsername` varchar(20) NOT NULL,
-  `clientIssueNumber` int(11) NOT NULL,
+  `issueID` int(11) NOT NULL,
   `description` varchar(200) NOT NULL,
   `date` datetime NOT NULL,
-  PRIMARY KEY (`clientIssueNumber`),
+  PRIMARY KEY (`issueID`),
   KEY `clientUsername_idx` (`clientUsername`),
   CONSTRAINT `clientUsername` FOREIGN KEY (`clientUsername`) REFERENCES `client` (`username`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -89,7 +89,7 @@ CREATE TABLE `issue` (
 
 LOCK TABLES `issue` WRITE;
 /*!40000 ALTER TABLE `issue` DISABLE KEYS */;
-INSERT INTO `issue` VALUES ('harsohailB',0,'player names are wrong','2020-02-24 20:42:55'),('hello2',1,'please fix this bug','2020-02-24 11:57:24');
+INSERT INTO `issue` VALUES ('hello2',1,'please fix this bug','2020-02-24 11:57:24');
 /*!40000 ALTER TABLE `issue` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -107,7 +107,7 @@ CREATE TABLE `reviews` (
   KEY `adminUsername_idx` (`adminUsername`),
   KEY `issueID_idx` (`issueID`),
   CONSTRAINT `adminUsername` FOREIGN KEY (`adminUsername`) REFERENCES `admin` (`username`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `issueID` FOREIGN KEY (`issueID`) REFERENCES `issue` (`clientIssueNumber`) ON DELETE RESTRICT ON UPDATE RESTRICT
+  CONSTRAINT `issueID` FOREIGN KEY (`issueID`) REFERENCES `issue` (`issueID`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -260,11 +260,10 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getIssueByID`(
-	IN clientUsername VARCHAR(20),
-    IN clientIssueNumber Integer
+    IN issueID Integer
 )
 BEGIN
-SELECT * FROM issue WHERE issue.clientUsername = clientUsername AND issue.clientIssueNumber = clientIssueNumber;
+SELECT * FROM issue WHERE issue.issueID = issueID;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -372,4 +371,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-02-24 22:04:56
+-- Dump completed on 2020-02-24 22:33:26

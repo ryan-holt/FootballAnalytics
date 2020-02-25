@@ -40,15 +40,15 @@ class IssueUsername(Resource):
             else:
                 return {'message': 'no issues found by client specified'}, 201
 
-@ns.route('/<string:clientUsername>/<int:clientIssueNumber>')
+@ns.route('/<int:issueID>')
 class IssueID(Resource):
-    def get(self, clientUsername, clientIssueNumber):
+    def get(self, issueID):
         """
-        Gets issue by client's username (reporter) and their issue number
+        Gets issue for specified issue id
         """
-        if clientUsername:
+        if issueID:
             with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
-                cursor.callproc("getIssueByID", [clientUsername, clientIssueNumber])
+                cursor.callproc("getIssueByID", [issueID])
                 results = cursor.fetchall()
             if results:
                 return jsonify(results)
