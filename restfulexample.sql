@@ -97,6 +97,71 @@ INSERT INTO `coaching_staff` VALUES (1,'CGY','Wayne','Harris','Head Coach'),(2,'
 UNLOCK TABLES;
 
 --
+-- Table structure for table `follows`
+--
+
+DROP TABLE IF EXISTS `follows`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `follows` (
+  `player_id` int(11) NOT NULL,
+  `username` varchar(20) NOT NULL,
+  PRIMARY KEY (`player_id`,`username`),
+  KEY `follows_client_username_fk` (`username`),
+  CONSTRAINT `follows_client_username_fk` FOREIGN KEY (`username`) REFERENCES `client` (`username`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `follows_player_player_id_fk` FOREIGN KEY (`player_id`) REFERENCES `player` (`player_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `follows`
+--
+
+LOCK TABLES `follows` WRITE;
+/*!40000 ALTER TABLE `follows` DISABLE KEYS */;
+INSERT INTO `follows` VALUES (1,'hello2'),(2,'hello2');
+/*!40000 ALTER TABLE `follows` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `game`
+--
+
+DROP TABLE IF EXISTS `game`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `game` (
+  `game_id` int(11) NOT NULL AUTO_INCREMENT,
+  `home_team` varchar(3) NOT NULL,
+  `home_number_of_plays` int(11) DEFAULT NULL,
+  `home_points` int(11) DEFAULT NULL,
+  `away_team` varchar(3) NOT NULL,
+  `away_number_of_plays` int(11) DEFAULT NULL,
+  `away_points` int(11) DEFAULT NULL,
+  `stadium` varchar(100) NOT NULL,
+  `location` varchar(100) NOT NULL,
+  `attendance` int(11) DEFAULT NULL,
+  `duration` int(11) NOT NULL,
+  `start_time` datetime NOT NULL,
+  PRIMARY KEY (`game_id`),
+  KEY `game_team_team_code_fk` (`home_team`),
+  KEY `game_team_team_code_fk_2` (`away_team`),
+  CONSTRAINT `game_team_team_code_fk` FOREIGN KEY (`home_team`) REFERENCES `team` (`team_code`),
+  CONSTRAINT `game_team_team_code_fk_2` FOREIGN KEY (`away_team`) REFERENCES `team` (`team_code`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `game`
+--
+
+LOCK TABLES `game` WRITE;
+/*!40000 ALTER TABLE `game` DISABLE KEYS */;
+INSERT INTO `game` VALUES (1,'CGY',11,41,'ALB',10,31,'Foote Field','Calgary',2300,3,'2020-02-29 19:00:00');
+/*!40000 ALTER TABLE `game` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `issue`
 --
 
@@ -108,7 +173,7 @@ CREATE TABLE `issue` (
   `issue_id` int(11) NOT NULL,
   `description` varchar(200) NOT NULL,
   `date` datetime NOT NULL,
-  PRIMARY KEY (`issue_id`),
+  PRIMARY KEY (`issue_id`,`client_username`),
   KEY `issue_client_username_fk` (`client_username`),
   CONSTRAINT `issue_client_username_fk` FOREIGN KEY (`client_username`) REFERENCES `client` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -122,6 +187,48 @@ LOCK TABLES `issue` WRITE;
 /*!40000 ALTER TABLE `issue` DISABLE KEYS */;
 INSERT INTO `issue` VALUES ('hello2',1,'Please fix this bug','2020-02-29 00:31:31');
 /*!40000 ALTER TABLE `issue` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `play`
+--
+
+DROP TABLE IF EXISTS `play`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `play` (
+  `play_id` int(11) NOT NULL AUTO_INCREMENT,
+  `game_id` int(11) NOT NULL,
+  `quarter` int(11) NOT NULL,
+  `Time` time NOT NULL,
+  `valid` varchar(1) NOT NULL,
+  `field_position` int(11) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `team_possession` varchar(3) NOT NULL,
+  `yardage_gained` int(11) DEFAULT NULL,
+  `down` int(11) NOT NULL,
+  `first_down_distance` int(11) NOT NULL,
+  `run_pass_flag` varchar(1) DEFAULT NULL,
+  `ball_position` varchar(3) NOT NULL,
+  `out_of_bounds` varchar(1) DEFAULT NULL,
+  PRIMARY KEY (`play_id`),
+  KEY `play_game_game_id_fk` (`game_id`),
+  KEY `play_team_team_code_fk` (`team_possession`),
+  KEY `play_team_team_code_fk_2` (`ball_position`),
+  CONSTRAINT `play_game_game_id_fk` FOREIGN KEY (`game_id`) REFERENCES `game` (`game_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `play_team_team_code_fk` FOREIGN KEY (`team_possession`) REFERENCES `team` (`team_code`),
+  CONSTRAINT `play_team_team_code_fk_2` FOREIGN KEY (`ball_position`) REFERENCES `team` (`team_code`)
+) ENGINE=InnoDB AUTO_INCREMENT=187 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `play`
+--
+
+LOCK TABLES `play` WRITE;
+/*!40000 ALTER TABLE `play` DISABLE KEYS */;
+INSERT INTO `play` VALUES (1,1,1,'15:00:00','N',-45,'Niko DiFonte kickoff 60 yards to the ALB5, Wesley Bookland return 31 yards to the ALB36, out-of-bounds (M. Lucyshyn).','CGY',31,0,0,NULL,'CGY','Y'),(2,1,1,'14:51:00','N',-36,'Jonathan Rosery rush for 3 yards to the ALB39 (Tyrese Best).','ALB',3,1,10,'R','ALB',NULL),(3,1,1,'14:51:00','N',-39,'Brad Launhardt pass complete to Tyler Turner for 5 yards to the ALB44 (M. Lucyshyn).','ALB',5,2,7,'P','ALB',NULL),(4,1,1,'14:51:00','Y',-44,'PENALTY ALB TC 5 yards to the ALB39.','ALB',NULL,3,2,'N','ALB',NULL),(5,1,1,'14:51:00','N',-39,'Reece Oldenburg punt 37 yards to the CGY34, Dallas Boath return 4 yards to the CGY38 (Shaydon Philip).','ALB',4,3,7,NULL,'ALB',NULL),(6,1,1,'14:51:00','N',-38,'Jeshrun Antwi rush for 12 yards to the CGY50, 1ST DOWN CGY (Wesley Bookland).','CGY',12,1,10,'R','CGY',NULL),(7,1,1,'13:23:00','N',-50,'Adam Sinagra rush for 3 yards to the CGY53 (Shaydon Philip).','CGY',3,1,10,'P','CGY',NULL),(8,1,1,'13:23:00','N',-53,'Adam Sinagra pass incomplete to Dallas Boath, PENALTY CGY holding declined.','CGY',0,2,7,'P','CGY',NULL),(9,1,1,'13:23:00','Y',-53,'PENALTY CGY offside 5 yards to the CGY48.','CGY',0,3,7,NULL,'CGY',NULL),(10,1,1,'13:23:00','N',-48,'Niko DiFonte punt 38 yards to the ALB24, Wesley Bookland return 0 yards to the ALB24, PENALTY ALB holding 10 yards to the ALB14, 1st and 10, ALB ball on ALB14.','CGY',0,3,12,NULL,'CGY',NULL),(11,1,1,'11:15:00','N',-14,'D. Kalesnikoff rush for loss of 5 yards to the ALB9 (M. Lucyshyn).','ALB',-5,1,10,'R','ALB',NULL),(12,1,1,'11:15:00','N',-9,'Brad Launhardt pass complete to Jonathan Rosery for loss of 1 yard to the ALB8 (Joe Cant), PENALTY ALB holding declined.','ALB',-1,2,15,'P','ALB',NULL),(13,1,1,'09:57:00','N',-8,'TEAM loss of 8 yards to ALB0, safety.','ALB',NULL,3,16,NULL,'ALB',NULL),(14,1,1,'09:57:00','N',-35,'Brent Arthur kickoff 64 yards to the CGY11, Jalen Philpot return 17 yards to the CGY28 (Lucky Daniels).','ALB',17,0,0,NULL,'ALB',NULL),(15,1,1,'09:52:00','N',-28,'Jeshrun Antwi rush for no gain to the CGY28 (Jassen Brown).','CGY',0,1,10,'R','CGY',NULL),(16,1,1,'09:52:00','N',-28,'Jeshrun Antwi rush for loss of 4 yards to the CGY24 (Luke Sperry).','CGY',-4,2,10,'R','CGY',NULL),(17,1,1,'09:52:00','N',-24,'Niko DiFonte punt 41 yards to the ALB45, PENALTY CGY no yards 15 yards to the CGY50, 1st and 10, ALB ball on CGY50.','CGY',0,3,14,NULL,'CGY',NULL),(18,1,1,'08:27:00','N',50,'Jonathan Rosery rush for 3 yards to the CGY47 (Tyrese Best;Hayden Nellis).','ALB',3,1,10,'R','CGY',NULL),(19,1,1,'08:27:00','N',47,'Brad Launhardt pass complete to D. Kalesnikoff for 25 yards to the CGY22, 1ST DOWN ALB, out-of-bounds (Joe Cant).','ALB',25,2,7,'P','CGY','Y'),(20,1,1,'08:27:00','Y',22,'Brad Launhardt pass incomplete to Ben Kopczynski, PENALTY CGY offside defense 5 yards to the CGY17, NO PLAY.','ALB',0,1,10,'P','CGY',NULL),(21,1,1,'08:27:00','N',17,'Brad Launhardt pass complete to Jonathan Rosery for 2 yards to the CGY15 (Charlie Moore).','ALB',2,1,5,'P','CGY',NULL),(22,1,1,'08:27:00','N',15,'D. Kalesnikoff rush for loss of 1 yard to the CGY16 (Carter Johnson).','ALB',-1,2,3,'R','CGY',NULL),(23,1,1,'06:07:00','N',16,'Brent Arthur field goal attempt from 23 GOOD, .','ALB',NULL,3,4,NULL,'CGY',NULL),(24,1,1,'06:07:00','N',-35,'Adam Sinagra pass incomplete to Jalen Philpot.','CGY',0,1,10,'P','CGY',NULL),(25,1,1,'06:07:00','N',-35,'Adam Sinagra pass complete to Jalen Philpot for 25 yards to the ALB50, 1ST DOWN CGY (Jassen Brown).','CGY',25,2,10,'P','CGY',NULL),(26,1,1,'06:07:00','Y',50,'Jeshrun Antwi rush for 4 yards to the ALB46 (Luke Sperry), PENALTY ALB offside defense 5 yards to the ALB45, NO PLAY, PENALTY CGY unnecessary roughness 15 yards to the CGY50, NO PLAY.','CGY',4,1,10,'R','ALB',NULL),(27,1,1,'06:07:00','N',-50,'Adam Sinagra pass complete to Jeshrun Antwi for 36 yards to the ALB24, 1ST DOWN CGY (Aaron Chabaylo).','CGY',36,1,20,'P','CGY',NULL),(28,1,1,'06:07:00','N',24,'Jeshrun Antwi rush for 2 yards to the ALB22 (Josiah Schakel).','CGY',2,1,10,'R','ALB',NULL),(29,1,1,'06:07:00','Y',22,'R. Rodrigues rush for no gain to the ALB22 (Jassen Brown), PENALTY ALB offside defense 5 yards to the ALB17, NO PLAY.','CGY',0,2,8,'R','ALB',NULL),(30,1,1,'06:07:00','N',17,'R. Rodrigues rush for 4 yards to the ALB13, 1ST DOWN CGY (Jassen Brown).','CGY',4,2,3,'R','ALB',NULL),(31,1,1,'06:07:00','N',13,'Jeshrun Antwi rush for 12 yards to the ALB1, 1ST DOWN CGY (T. Blackburn).','CGY',12,1,10,'R','ALB',NULL),(32,1,1,'02:01:00','N',1,'Josiah Joseph rush for 1 yard to the ALB0, 1ST DOWN CGY, TOUCHDOWN, , PENALTY ALB offside defense declined.','CGY',1,1,1,'R','ALB',NULL),(33,1,1,'02:01:00','N',5,'Niko DiFonte kick attempt good.','CGY',NULL,0,0,NULL,'ALB',NULL),(34,1,1,'02:01:00','N',-45,'Niko DiFonte kickoff 55 yards to the ALB10, Wesley Bookland return 21 yards to the ALB31 (Subomi Oyesorro).','CGY',21,0,0,NULL,'CGY',NULL),(35,1,1,'01:55:00','Y',-31,'Jonathan Rosery rush for 8 yards to the ALB39 (Deane Leonard), PENALTY ALB holding 10 yards to the ALB21, NO PLAY.','ALB',8,1,10,'R','ALB',NULL),(36,1,1,'01:55:00','N',-21,'Brad Launhardt pass intercepted by Charlie Moore at the ALB38, Charlie Moore return 16 yards to the ALB22, out-of-bounds.','ALB',0,1,20,'P','ALB','Y'),(37,1,1,'01:19:00','N',22,'Jeshrun Antwi rush for 0 yards to the ALB22 (Jayden Dalke).','CGY',0,1,10,'R','ALB',NULL),(38,1,1,'01:19:00','N',22,'Adam Sinagra pass complete to Jalen Philpot for 19 yards to the ALB3, 1ST DOWN CGY, out-of-bounds (Troy Hansen).','CGY',19,2,10,'P','ALB','Y'),(39,1,1,'01:19:00','N',3,'Jeshrun Antwi rush for loss of 1 yard to the ALB4 (Aaron Chabaylo).','CGY',-1,1,3,'R','ALB',NULL),(40,1,1,'01:19:00','N',4,'J-Min Pelley rush for 2 yards to the ALB2 (Cole Nelson;D. Burgmaier).','CGY',2,2,4,'R','ALB',NULL),(41,1,2,'14:42:00','N',2,'Josiah Joseph pass complete to Zach Newman for 2 yards to the ALB0, 1ST DOWN CGY, TOUCHDOWN, .','CGY',2,3,2,'P','ALB',NULL),(42,1,2,'14:42:00','N',5,'Niko DiFonte kick attempt good.','CGY',NULL,0,0,NULL,'ALB',NULL),(43,1,2,'14:42:00','N',-45,'Niko DiFonte kickoff 59 yards to the ALB6, Wesley Bookland return 19 yards to the ALB25 (Aidan Miele).','CGY',19,0,0,NULL,'CGY',NULL),(44,1,2,'14:37:00','Y',-25,'Brad Launhardt pass incomplete to Ben Kopczynski, PENALTY CGY offside defense 5 yards to the ALB30, NO PLAY.','ALB',0,1,10,'P','ALB',NULL),(45,1,2,'14:37:00','N',-30,'Brad Launhardt rush for 9 yards to the ALB39, 1ST DOWN ALB (T. Abrahams-Web).','ALB',9,1,5,'R','ALB',NULL),(46,1,2,'14:37:00','N',-39,'Brad Launhardt pass complete to Tanner Buchanan for 4 yards to the ALB43 (Peter Nicastro), PENALTY CGY unnecessary roughness 10 yards to the ALB53, 1ST DOWN ALB, PENALTY CGY unnecessary roughness 15 yards to the CGY42, 1ST DOWN ALB.','ALB',4,1,10,'P','ALB',NULL),(47,1,2,'14:37:00','N',42,'Jonathan Rosery rush for 6 yards to the CGY36 (Patrick Pankow).','ALB',6,1,10,'R','CGY',NULL),(48,1,2,'14:37:00','Y',36,'Jonathan Rosery rush for no gain to the CGY36 (Cole Kussmann), PENALTY ALB holding 10 yards to the CGY46, NO PLAY.','ALB',0,2,4,'R','CGY',NULL),(49,1,2,'14:37:00','N',46,'Brad Launhardt pass complete to D. Bubelenyi for 23 yards to the CGY23, 1ST DOWN ALB, out-of-bounds (Daniel Teitz).','ALB',23,2,14,'P','CGY','Y'),(50,1,2,'14:37:00','N',23,'Brad Launhardt pass incomplete to Ben Kopczynski.','ALB',0,1,10,'P','CGY',NULL),(51,1,2,'12:17:00','N',23,'Brad Launhardt pass complete to D. Bubelenyi for 23 yards to the CGY0, 1ST DOWN ALB, TOUCHDOWN, , PENALTY CGY offside defense declined.','ALB',23,2,10,'P','CGY',NULL),(52,1,2,'12:17:00','N',5,'Brent Arthur kick attempt good.','ALB',NULL,0,0,NULL,'CGY',NULL),(53,1,2,'12:17:00','N',-45,'Brent Arthur kickoff 51 yards to the CGY14, Jalen Philpot return 38 yards to the CGY52 (Jake Taylor), PENALTY ALB unnecessary roughness 15 yards to the ALB43, 1st and 10, CGY ball on ALB43.','ALB',38,0,0,NULL,'ALB',NULL),(54,1,2,'12:08:00','N',43,'Jeshrun Antwi rush for 20 yards to the ALB23, 1ST DOWN CGY (T. Blackburn).','CGY',20,1,10,'R','ALB',NULL),(55,1,2,'12:08:00','N',23,'Jeshrun Antwi rush for 6 yards to the ALB17 (Shaydon Philip).','CGY',6,1,10,'R','ALB',NULL),(56,1,2,'12:08:00','N',17,'Adam Sinagra pass complete to Alex Basilis for 14 yards to the ALB3, 1ST DOWN CGY (Jayden Dalke).','CGY',14,2,4,'P','ALB',NULL),(57,1,2,'10:06:00','Y',3,'TIMEOUT CGY, NO PLAY.','CGY',NULL,1,3,'N','ALB',NULL),(58,1,2,'10:06:00','N',3,'Adam Sinagra pass complete to Jalen Philpot for 3 yards to the ALB0, 1ST DOWN CGY, TOUCHDOWN, .','CGY',3,1,3,'P','ALB',NULL),(59,1,2,'10:06:00','N',5,'Niko DiFonte kick attempt good.','CGY',NULL,0,0,NULL,'ALB',NULL),(60,1,2,'10:06:00','N',-45,'Niko DiFonte kickoff 62 yards to the ALB3, Wesley Bookland return 40 yards to the ALB43, out-of-bounds (Niko DiFonte), PENALTY CGY unnecessary roughness 15 yards to the CGY52, 1st and 10, ALB ball on CGY52.','CGY',40,0,0,NULL,'CGY','Y'),(61,1,2,'09:57:00','N',52,'Brad Launhardt pass intercepted by M. Lucyshyn at the CGY48, M. Lucyshyn return 7 yards to the 55 yardline (Brad Launhardt), PENALTY CGY unnecessary roughness 15 yards to the CGY40, 1st and 10, CGY ball on CGY40.','ALB',0,1,10,'P','CGY',NULL),(62,1,2,'09:32:00','N',-40,'Jeshrun Antwi rush for 2 yards to the CGY42 (D. Burgmaier).','CGY',2,1,10,'R','CGY',NULL),(63,1,2,'09:32:00','N',-42,'Adam Sinagra pass complete to H. Karl for 29 yards to the ALB39, 1ST DOWN CGY (Jayden Dalke), PENALTY ALB IC declined, PENALTY ALB IC declined.','CGY',29,2,8,'P','CGY',NULL),(64,1,2,'09:32:00','N',39,'R. Rodrigues rush for 6 yards to the ALB33 (Luke Sperry).','CGY',6,1,10,'R','ALB',NULL),(65,1,2,'09:32:00','N',33,'Adam Sinagra pass complete to Hunter Karl for 15 yards to the ALB18, 1ST DOWN CGY (Jayden Dalke), PENALTY ALB unnecessary roughness 15 yards to the ALB3, 1ST DOWN CGY.','CGY',15,2,4,'P','ALB',NULL),(66,1,2,'09:32:00','Y',3,'Cole Kussmann rush for 1 yard to the ALB2 (Aaron Chabaylo), PENALTY CGY clipping 10 yards to the ALB13, NO PLAY.','CGY',1,1,3,'R','ALB',NULL),(67,1,2,'09:32:00','N',13,'Adam Sinagra pass incomplete to Dallas Boath (Shaydon Philip).','CGY',0,1,13,'P','ALB',NULL),(68,1,2,'09:32:00','Y',13,'Adam Sinagra pass incomplete to Alex Basilis, PENALTY ALB unnecessary roughness 12 yards to the ALB1, NO PLAY.','CGY',0,2,13,'P','ALB',NULL),(69,1,2,'09:32:00','Y',1,'R. Rodrigues rush for no gain to the ALB1 (Jassen Brown), PENALTY ALB offside defense 0 yards to the ALB1, 1ST DOWN CGY, NO PLAY.','CGY',0,2,1,'R','ALB',NULL),(70,1,2,'05:56:00','N',1,'Adam Sinagra rush for 1 yard to the ALB0, 1ST DOWN CGY, TOUCHDOWN, .','CGY',1,1,1,'R','ALB',NULL),(71,1,2,'05:56:00','N',5,'Niko DiFonte kick attempt good.','CGY',NULL,0,0,NULL,'ALB',NULL),(72,1,2,'05:56:00','N',-45,'Niko DiFonte kickoff 61 yards to the ALB4, D. Bubelenyi return 23 yards to the ALB27 (Nick Statz).','CGY',23,0,0,NULL,'CGY',NULL),(73,1,2,'05:47:00','N',-27,'Jonathan Rosery rush for loss of 3 yards to the ALB24 (Peter Nicastro).','ALB',-3,1,10,'R','ALB',NULL),(74,1,2,'05:47:00','N',-24,'Brad Launhardt pass complete to Ben Kopczynski for 27 yards to the ALB51, 1ST DOWN ALB (Trey Dube).','ALB',27,2,13,'P','ALB',NULL),(75,1,2,'05:47:00','N',-51,'Brad Launhardt pass incomplete to D. Bubelenyi.','ALB',0,1,10,'P','ALB',NULL),(76,1,2,'05:47:00','N',-51,'Brad Launhardt pass complete to Jonathan Rosery for 13 yards to the CGY46, 1ST DOWN ALB (Jacob Biggs).','ALB',13,2,10,'P','ALB',NULL),(77,1,2,'05:47:00','N',46,'Brad Launhardt pass complete to Jonathan Rosery for 13 yards to the CGY33, 1ST DOWN ALB, out-of-bounds (Patrick Pankow).','ALB',13,1,10,'P','CGY','Y'),(78,1,2,'05:47:00','N',33,'Brad Launhardt rush for 6 yards to the CGY27 (M. Lucyshyn).','ALB',6,1,10,'R','CGY',NULL),(79,1,2,'05:47:00','N',27,'Jonathan Rosery rush for 6 yards to the CGY21, 1ST DOWN ALB (Adam Sinagra).','ALB',6,2,4,'R','CGY',NULL),(80,1,2,'05:47:00','N',21,'Brad Launhardt pass incomplete to D. Kalesnikoff.','ALB',0,1,10,'P','CGY',NULL),(81,1,2,'05:47:00','N',21,'Brad Launhardt pass complete to Tanner Buchanan for 4 yards to the CGY17 (T. Abrahams-Web).','ALB',4,2,10,'P','CGY',NULL),(82,1,2,'02:09:00','N',17,'Brent Arthur field goal attempt from 24 MISSED, kick to CGY-11, , Deane Leonard return 13 yards to the CGY2 (Parker Dawson), PENALTY ALB illegal block declined, CGY ball on CGY20.','ALB',13,3,6,NULL,'CGY',NULL),(83,1,2,'02:09:00','Y',-20,'R. Rodrigues rush for 5 yards to the ALB25 (Jayden Dalke), PENALTY CGY holding 10 yards to the CGY10, NO PLAY.','CGY',5,1,10,'R','CGY',NULL),(84,1,2,'02:09:00','N',-10,'Adam Sinagra pass complete to Jalen Philpot for 15 yards to the CGY25 (Shaydon Philip).','CGY',15,1,20,'P','CGY',NULL),(85,1,2,'02:09:00','N',-25,'Adam Sinagra pass complete to Alex Basilis for 17 yards to the CGY42, 1ST DOWN CGY (D. Burgmaier).','CGY',17,2,5,'P','CGY',NULL),(86,1,2,'02:09:00','N',-42,'Adam Sinagra pass incomplete to Dallas Boath.','CGY',0,1,10,'P','CGY',NULL),(87,1,2,'02:09:00','N',-42,'Adam Sinagra pass incomplete to Payton Burbank (David Kolkman).','CGY',0,2,10,'P','CGY',NULL),(88,1,2,'02:09:00','N',-42,'Niko DiFonte punt 26 yards to the ALB42, out-of-bounds.','CGY',NULL,3,10,NULL,'CGY','Y'),(89,1,2,'01:16:00','N',-42,'Brad Launhardt pass complete to Ben Kopczynski for 6 yards to the ALB48 (Deane Leonard).','ALB',6,1,10,'P','ALB',NULL),(90,1,2,'01:16:00','N',-48,'Brad Launhardt pass complete to Jonathan Rosery for 7 yards to the 55 yardline, 1ST DOWN ALB, out-of-bounds (Peter Nicastro).','ALB',7,2,4,'P','ALB','Y'),(91,1,2,'01:16:00','N',-55,'Jonathan Rosery rush for 3 yards to the CGY52 (M. Lucyshyn).','ALB',3,1,10,'R','ALB',NULL),(92,1,2,'01:16:00','N',52,'Brad Launhardt pass complete to Tanner Buchanan for 29 yards to the CGY23, 1ST DOWN ALB (Joe Cant).','ALB',29,2,7,'P','CGY',NULL),(93,1,2,'01:16:00','N',23,'Brad Launhardt pass incomplete to Jon Girma.','ALB',0,1,10,'P','CGY',NULL),(94,1,2,'01:16:00','N',23,'Brad Launhardt pass incomplete to Tyler Turner.','ALB',0,2,10,'P','CGY',NULL),(95,1,2,'00:13:00','N',23,'J. Giustini field goal attempt from 30 GOOD, .','ALB',NULL,3,10,NULL,'CGY',NULL),(96,1,2,'00:13:00','N',-35,'TEAM rush for loss of 1 yard to the CGY34.','CGY',-1,1,10,'R','CGY',NULL),(97,1,2,'00:13:00','N',-34,'TEAM rush for loss of 2 yards to the CGY31.','CGY',-2,2,11,'R','CGY',NULL),(98,1,3,'15:00:00','N',-31,'Brent Arthur kickoff 60 yards to the CGY5, Jalen Philpot return 16 yards to the CGY21, fumble forced by Josiah Schakel, fumble by Jalen Philpot recovered by ALB Jordy Kibamba at CGY30, PENALTY holding CGY, declined.','CGY',16,0,0,NULL,'CGY',NULL),(99,1,3,'14:56:00','N',30,'Brad Launhardt rush for loss of 6 yards to the CGY36, fumble by Brad Launhardt recovered by CGY Subomi Oyesorro at CGY40.','ALB',-6,1,10,'R','CGY',NULL),(100,1,3,'14:37:00','N',-40,'Adam Sinagra pass complete to Alex Basilis for 7 yards to the CGY47 (Shaydon Philip).','CGY',7,1,10,'P','CGY',NULL),(101,1,3,'14:37:00','N',-47,'Adam Sinagra pass incomplete.','CGY',0,2,3,'P','CGY',NULL),(102,1,3,'14:37:00','N',-47,'Niko DiFonte punt 47 yards to the ALB16, Wesley Bookland return 2 yards to the ALB18.','CGY',2,3,3,NULL,'CGY',NULL),(103,1,3,'13:24:00','N',-18,'Brad Launhardt pass incomplete to Jonathan Rosery.','ALB',0,1,10,'P','ALB',NULL),(104,1,3,'13:24:00','N',-18,'Brad Launhardt pass complete to Ben Kopczynski for 7 yards to the ALB25 (Deane Leonard), PENALTY ALB offside declined.','ALB',7,2,10,'P','ALB',NULL),(105,1,3,'13:24:00','N',-25,'Reece Oldenburg punt 41 yards to the CGY44, Dallas Boath return 13 yards to the ALB53 (Jayden Dalke).','ALB',13,3,3,NULL,'ALB',NULL),(106,1,3,'12:30:00','N',53,'Adam Sinagra pass complete to Dallas Boath for 7 yards to the ALB46 (Shaydon Philip).','CGY',7,1,10,'P','ALB',NULL),(107,1,3,'12:30:00','N',46,'Jeshrun Antwi rush for 7 yards to the ALB39, 1ST DOWN CGY (Josiah Schakel).','CGY',7,2,3,'R','ALB',NULL),(108,1,3,'12:30:00','N',39,'Adam Sinagra pass complete to Alex Basilis for 37 yards to the ALB2, 1ST DOWN CGY (T. Blackburn).','CGY',37,1,10,'P','ALB',NULL),(109,1,3,'12:30:00','N',2,'Adam Sinagra rush for 1 yard to the ALB1 (Parker Dawson).','CGY',1,1,2,'R','ALB',NULL),(110,1,3,'12:30:00','Y',1,'PENALTY CGY illegal procedure 5 yards to the ALB6.','CGY',NULL,2,1,'N','ALB',NULL),(111,1,3,'12:30:00','N',6,'Adam Sinagra pass incomplete to Jalen Philpot, dropped pass.','CGY',0,2,6,'P','ALB',NULL),(112,1,3,'09:27:00','N',6,'Niko DiFonte field goal attempt from 13 GOOD, .','CGY',NULL,3,6,NULL,'ALB',NULL),(113,1,3,'09:27:00','N',-35,'Jonathan Rosery rush for 5 yards to the ALB40 (Hayden Nellis), PENALTY ALB face mask 15 yards to the ALB25.','ALB',5,1,10,'R','ALB',NULL),(114,1,3,'09:27:00','N',-25,'Brad Launhardt pass incomplete to Tyler Turner.','ALB',0,1,20,'P','ALB',NULL),(115,1,3,'09:27:00','N',-25,'Reece Oldenburg punt 32 yards to the CGY53, N. Anderson return 6 yards to the ALB51 (Josiah Schakel).','ALB',6,2,20,NULL,'ALB',NULL),(116,1,3,'08:17:00','N',51,'Adam Sinagra pass incomplete to Dallas Boath, PENALTY CGY illegal block declined.','CGY',0,1,10,'P','ALB',NULL),(117,1,3,'08:17:00','N',51,'Adam Sinagra pass incomplete to Jalen Philpot.','CGY',0,2,10,'P','ALB',NULL),(118,1,3,'08:17:00','N',51,'Niko DiFonte punt 50 yards to the ALB1.','CGY',0,3,10,NULL,'ALB',NULL),(119,1,3,'07:12:00','N',-1,'Jonathan Rosery rush for 1 yard to the ALB2 (Peter Nicastro).','ALB',1,1,10,'R','ALB',NULL),(120,1,3,'07:12:00','N',-2,'Brad Launhardt rush for 10 yards to the ALB12, 1ST DOWN ALB (T. Abrahams-Web).','ALB',10,2,9,'R','ALB',NULL),(121,1,3,'07:12:00','N',-12,'Brad Launhardt pass complete to Jonathan Rosery for 12 yards to the ALB24, out-of-bounds (M. Lucyshyn), PENALTY ALB holding 10 yards to the ALB14.','ALB',12,1,10,'P','ALB','Y'),(122,1,3,'07:12:00','N',-14,'Brad Launhardt pass complete to Ben Kopczynski for 15 yards to the ALB29, 1ST DOWN ALB (Nick Statz).','ALB',15,1,10,'P','ALB',NULL),(123,1,3,'07:12:00','N',-29,'Jonathan Rosery rush for 7 yards to the ALB36 (T. Abrahams-Web), PENALTY ALB unnecessary roughness 15 yards to the ALB21.','ALB',7,1,10,'R','ALB',NULL),(124,1,3,'07:12:00','N',-21,'Brad Launhardt pass incomplete to Jonathan Rosery, PENALTY CGY unnecessary roughness 15 yards to the ALB36.','ALB',0,2,18,'P','ALB',NULL),(125,1,3,'07:12:00','N',-36,'Brad Launhardt pass complete to Ben Kopczynski for 16 yards to the ALB52, 1ST DOWN ALB (M. Lucyshyn).','ALB',16,2,3,'P','ALB',NULL),(126,1,3,'07:12:00','N',-52,'Brad Launhardt pass complete to Tanner Buchanan for 44 yards to the CGY14, 1ST DOWN ALB (Joe Cant).','ALB',44,1,10,'P','ALB',NULL),(127,1,3,'03:06:00','N',14,'Brad Launhardt pass complete to Tanner Buchanan for 14 yards to the CGY0, 1ST DOWN ALB, TOUCHDOWN, PENALTY CGY roughing passer 15 yards to the CGY50, PENALTY CGY offside defense declined.','ALB',14,1,10,'P','CGY',NULL),(128,1,3,'03:06:00','N',5,'J. Giustini kick attempt good.','ALB',NULL,0,0,NULL,'CGY',NULL),(129,1,3,'03:06:00','N',50,'Brent Arthur kickoff 60 yards to the CGY-10 - SINGLE, touchback.','ALB',NULL,0,0,NULL,'CGY',NULL),(130,1,3,'03:04:00','N',-35,'Jeshrun Antwi rush for 5 yards to the CGY40 (Jayden Dalke;Jassen Brown).','CGY',5,1,10,'R','CGY',NULL),(131,1,3,'03:04:00','N',-40,'Adam Sinagra pass incomplete to Jalen Philpot.','CGY',0,2,5,'P','CGY',NULL),(132,1,3,'03:04:00','N',-40,'Niko DiFonte punt 38 yards to the ALB32, Wesley Bookland return 6 yards to the ALB38 (Cole Kussmann), PENALTY CGY illegal procedure declined, PENALTY ALB unnecessary roughness 15 yards to the ALB23, 1st and 10, ALB ball on ALB23.','CGY',6,3,5,NULL,'CGY',NULL),(133,1,3,'01:53:00','Y',-23,'Brad Launhardt pass complete to Jonathan Rosery for 13 yards to the ALB36 (Jacob Biggs;Nick Statz), PENALTY ALB illegal block 10 yards to the ALB13, PENALTY CGY unnecessary roughness 15 yards to the ALB28.','ALB',13,1,10,'P','ALB',NULL),(134,1,3,'01:53:00','N',-28,'Brad Launhardt pass complete to Ben Kopczynski for 9 yards to the ALB37 (Deane Leonard).','ALB',9,1,10,'P','ALB',NULL),(135,1,3,'01:53:00','Y',-37,'PENALTY ALB TMM 10 yards to the ALB27.','ALB',NULL,2,1,'N','ALB',NULL),(136,1,3,'01:53:00','N',-27,'Brad Launhardt pass complete to Ben Kopczynski for 35 yards to the CGY48, 1ST DOWN ALB (Deane Leonard).','ALB',35,2,11,'P','ALB',NULL),(137,1,3,'01:53:00','N',48,'Brad Launhardt pass complete to Ben Kopczynski for 20 yards to the CGY28, 1ST DOWN ALB (Jacob Biggs).','ALB',20,1,10,'P','CGY',NULL),(138,1,3,'01:53:00','N',28,'Jonathan Rosery rush for 14 yards to the CGY14, 1ST DOWN ALB (Carter Johnson).','ALB',14,1,10,'R','CGY',NULL),(139,1,4,'15:00:00','N',14,'Brad Launhardt pass incomplete to Colby Miller.','ALB',0,1,10,'P','CGY',NULL),(140,1,4,'15:00:00','Y',14,'Brad Launhardt rush for 12 yards to the CGY2 (Charlie Moore), PENALTY ALB holding 10 yards to the CGY24, NO PLAY.','ALB',12,2,10,'P','CGY',NULL),(141,1,4,'15:00:00','Y',24,'PENALTY ALB illegal procedure 5 yards to the CGY29.','ALB',NULL,2,20,'N','CGY',NULL),(142,1,4,'15:00:00','N',29,'Brad Launhardt pass incomplete (Trey Dube).','ALB',0,2,25,'P','CGY',NULL),(143,1,4,'13:34:00','N',29,'J. Giustini field goal attempt from 36 MISSED, kick to CGY-7, Deane Leonard return 10 yards to the CGY3.','ALB',10,3,25,NULL,'CGY',NULL),(144,1,4,'13:34:00','N',-20,'Jalen Philpot rush for 9 yards to the CGY29 (Luke Sperry).','CGY',9,1,10,'R','CGY',NULL),(145,1,4,'13:34:00','N',-29,'Josiah Joseph rush for no gain to the CGY29 (R. Szafranski).','CGY',0,2,1,'R','CGY',NULL),(146,1,4,'12:16:00','N',-29,'Josiah Joseph rush for 3 yards to the CGY32, 1ST DOWN CGY (Anthony Hume).','CGY',3,3,1,'R','CGY',NULL),(147,1,4,'11:27:00','N',-32,'Adam Sinagra pass intercepted by Jayden Dalke at the CGY35, Jayden Dalke return 35 yards to the CGY0, TOUCHDOWN, .','CGY',0,1,10,'P','CGY',NULL),(148,1,4,'11:27:00','N',5,'J. Giustini kick attempt good.','ALB',NULL,0,0,NULL,'CGY',NULL),(149,1,4,'11:27:00','N',-45,'Brent Arthur kickoff 60 yards to the CGY5, N. Anderson return 12 yards to the CGY17 (Jassen Brown).','ALB',12,0,0,NULL,'ALB',NULL),(150,1,4,'11:27:00','N',-17,'Jeshrun Antwi rush for 3 yards to the CGY20.','CGY',3,1,10,'R','CGY',NULL),(151,1,4,'11:27:00','N',-20,'Adam Sinagra pass incomplete to Jalen Philpot (Jayden Dalke).','CGY',0,2,7,'P','CGY',NULL),(152,1,4,'11:27:00','N',-20,'Niko DiFonte punt 38 yards to the ALB52, Wesley Bookland return 2 yards to the ALB54, fumble by Wesley Bookland recovered by CGY Chaz Marshall at 55 yardline.','CGY',2,3,7,NULL,'CGY',NULL),(153,1,4,'10:02:00','N',-55,'Adam Sinagra pass complete to Dallas Boath for 9 yards to the ALB46 (Josiah Schakel).','CGY',9,1,10,'P','CGY',NULL),(154,1,4,'10:02:00','N',46,'Jeshrun Antwi rush for 2 yards to the ALB44, 1ST DOWN CGY (Cole Nelson).','CGY',2,2,1,'R','ALB',NULL),(155,1,4,'10:02:00','N',44,'Adam Sinagra pass incomplete to Alex Basilis, dropped pass.','CGY',0,1,10,'P','ALB',NULL),(156,1,4,'10:02:00','N',44,'Adam Sinagra pass complete to Jalen Philpot for 15 yards to the ALB29, 1ST DOWN CGY (Josiah Schakel).','CGY',15,2,10,'P','ALB',NULL),(157,1,4,'10:02:00','N',29,'Adam Sinagra pass incomplete to Erik Nusl.','CGY',0,1,10,'P','ALB',NULL),(158,1,4,'10:02:00','N',29,'Adam Sinagra pass complete to Jeshrun Antwi for loss of 3 yards to the ALB32 (Aaron Chabaylo), PENALTY CGY holding declined.','CGY',-3,2,10,'P','ALB',NULL),(159,1,4,'07:10:00','N',32,'Niko DiFonte field goal attempt from 39 MISSED, kick to ALB-13, , Wesley Bookland return 71 yards to the CGY52, out-of-bounds (Dallas Boath).','CGY',71,3,13,NULL,'ALB','Y'),(160,1,4,'07:10:00','Y',52,'Brad Launhardt pass incomplete to Tanner Buchanan, PENALTY CGY roughing passer 15 yards to the CGY37, 1ST DOWN ALB, NO PLAY.','ALB',0,1,10,'P','CGY',NULL),(161,1,4,'07:10:00','N',37,'Brad Launhardt rush for 6 yards to the CGY31 (Noah McDonough).','ALB',6,1,10,'R','CGY',NULL),(162,1,4,'07:10:00','N',31,'Jonathan Rosery rush for 3 yards to the CGY28 (Jacob Plamondon).','ALB',3,2,4,'R','CGY',NULL),(163,1,4,'07:10:00','N',28,'Brad Launhardt rush for 2 yards to the CGY26, 1ST DOWN ALB (Alex Basilis).','ALB',2,3,1,'R','CGY',NULL),(164,1,4,'07:10:00','Y',26,'Brad Launhardt pass incomplete to Tanner Buchanan, PENALTY CGY pass interference 15 yards to the CGY11, 1ST DOWN ALB, NO PLAY.','ALB',0,1,10,'P','CGY',NULL),(165,1,4,'07:10:00','N',11,'Brad Launhardt pass complete to Jonathan Rosery for 4 yards to the CGY7 (Jacob Biggs).','ALB',4,1,10,'P','CGY',NULL),(166,1,4,'04:14:00','Y',7,'TIMEOUT ALB, NO PLAY.','ALB',NULL,2,6,'N','CGY',NULL),(167,1,4,'04:14:00','N',7,'Brad Launhardt pass incomplete to Jonathan Rosery, dropped pass.','ALB',0,2,6,'P','CGY',NULL),(168,1,4,'04:14:00','Y',7,'PENALTY ALB illegal procedure 0 yards to the CGY7.','ALB',NULL,3,6,'N','CGY',NULL),(169,1,4,'03:42:00','N',7,'J. Giustini field goal attempt from 15 GOOD, .','ALB',NULL,3,6,NULL,'CGY',NULL),(170,1,4,'03:42:00','N',-35,'Adam Sinagra pass incomplete to Alex Basilis.','CGY',0,1,10,'P','CGY',NULL),(171,1,4,'03:42:00','N',-35,'Adam Sinagra pass complete to Dallas Boath for 15 yards to the CGY50, 1ST DOWN CGY, out-of-bounds (Wesley Bookland).','CGY',15,2,10,'P','CGY','Y'),(172,1,4,'03:42:00','N',-50,'Adam Sinagra pass incomplete to Dallas Boath (Wesley Bookland).','CGY',0,1,10,'P','CGY',NULL),(173,1,4,'03:42:00','N',-50,'Adam Sinagra pass complete to Dallas Boath for 8 yards to the ALB52, out-of-bounds (Jayden Dalke).','CGY',8,2,10,'P','CGY','Y'),(174,1,4,'03:42:00','N',52,'Niko DiFonte punt 39 yards to the ALB13, Wesley Bookland return 7 yards to the ALB20 (Noah McDonough).','CGY',7,3,2,NULL,'ALB',NULL),(175,1,4,'02:12:00','N',-20,'Ben Kopczynski rush for 34 yards to the ALB54, 1ST DOWN ALB (Jacob Plamondon).','ALB',34,1,10,'R','ALB',NULL),(176,1,4,'02:12:00','N',-54,'Jonathan Rosery rush for 4 yards to the CGY52 (Daniel Teitz).','ALB',4,1,10,'R','ALB',NULL),(177,1,4,'02:12:00','N',52,'Jonathan Rosery rush for loss of 1 yard to the CGY53 (Hayden Nellis).','ALB',-1,2,6,'R','CGY',NULL),(178,1,4,'02:12:00','N',53,'Brad Launhardt pass incomplete, PENALTY ALB unnecessary roughness (Tyler Turner) 15 yards to the ALB42.','ALB',0,3,7,'P','CGY',NULL),(179,1,4,'01:31:00','N',42,'Jeshrun Antwi rush for 11 yards to the ALB31, 1ST DOWN CGY (Troy Hansen).','CGY',11,1,10,'R','ALB',NULL),(180,1,4,'01:31:00','N',31,'Jeshrun Antwi rush for 4 yards to the ALB27 (Jayden Dalke).','CGY',4,1,10,'R','ALB',NULL),(181,1,4,'01:31:00','N',27,'Jeshrun Antwi rush for loss of 2 yards to the ALB29 (Josiah Schakel).','CGY',-2,2,6,'R','ALB',NULL),(182,1,4,'00:20:00','N',29,'Niko DiFonte field goal attempt from 37 SINGLE, touchback, .','CGY',NULL,3,8,NULL,'ALB',NULL),(183,1,4,'00:20:00','N',-35,'Brad Launhardt pass complete to M. Peterson for 18 yards to the ALB53, 1ST DOWN ALB, out-of-bounds (Joe Cant).','ALB',18,1,10,'P','ALB','Y'),(184,1,4,'00:00:00','Y',-53,'TIMEOUT CGY, NO PLAY.','ALB',NULL,1,10,'N','ALB',NULL),(185,1,4,'00:00:00','N',-53,'Brad Launhardt pass intercepted by Deane Leonard at the CGY48, Deane Leonard return 62 yards to the ALB0, TOUCHDOWN, . PENALTY CGY unsportsmanlike conduct 10 yards to the ALB15.','ALB',0,1,10,'P','ALB',NULL),(186,1,4,'00:00:00','N',15,'Niko DiFonte kick attempt good.','CGY',NULL,0,0,NULL,'ALB',NULL);
+/*!40000 ALTER TABLE `play` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -406,6 +513,25 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `getClientsFollowedByPlayer` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getClientsFollowedByPlayer`(IN player_id int)
+begin
+   SELECT username FROM follows WHERE follows.player_id = player_id;
+end ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `getCoachingStaffById` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -562,6 +688,25 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `getPlayersFollowedByClient` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getPlayersFollowedByClient`(IN username VARCHAR(20))
+begin
+    SELECT * FROM player WHERE player_id IN (SELECT player_id FROM follows WHERE follows.username = username);
+end ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `getTeamByTeamCode` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -696,4 +841,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-02-29  1:04:39
+-- Dump completed on 2020-02-29  2:38:21
