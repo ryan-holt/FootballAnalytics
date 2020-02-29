@@ -53,3 +53,17 @@ class Client(Resource):
         if not results:
             return make_response({'message': 'No client exists with the username: {}'.format(username)}, 404)
         return make_response(jsonify(results), 200)
+
+
+@ns.route('/<string:username>/follows')
+class ClientFollows(Resource):
+    def get(self, username):
+        """
+        Gets the players a client follows
+        """
+        with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
+            cursor.callproc("getPlayersFollowedByClient", [username])
+            results = cursor.fetchall()
+        if not results:
+            return make_response({'message': 'No players are followed by client: {}'.format(username)}, 404)
+        return make_response(jsonify(results), 200)

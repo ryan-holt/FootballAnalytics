@@ -4,7 +4,7 @@ from flask_restplus import Resource, fields
 
 from restplus import api, db
 
-ns = api.namespace('team', description='Operations related to teams')
+ns = api.namespace('teams', description='Operations related to teams')
 team = api.model('Team',
                  {'team_code': fields.String(description='Team code of team', required=True, max_length=3),
                   'team_name': fields.String(description='Name of team', required=True, max_length=45),

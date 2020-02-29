@@ -79,6 +79,16 @@ class Player(Resource):
             connection.close()
         return make_response({'message': 'player {} has been updated successfully.'.format(player_id)}, 201)
 
+@ns.route('/<int:player_id>/follows')
+class Player(Resource):
+    def get(self, player_id):
+        """Gets clients followed by player"""
+        with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
+            cursor.callproc("getClientsFollowedByPlayer", [player_id])
+            results = cursor.fetchall()
+        if not results:
+            return make_response({'message': 'No clients follow player with the id: {}'.format(player_id)}, 404)
+        return make_response(jsonify(results), 200)
 
 @ns.route('/<int:player_id>/history')
 class PlayerHistory(Resource):
