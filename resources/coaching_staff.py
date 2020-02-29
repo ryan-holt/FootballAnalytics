@@ -6,10 +6,14 @@ from restplus import api, db
 
 ns = api.namespace('coaching_staff', description='Operations related to coaching staff')
 coaching_staff = api.model('Coaching_staff',
-                           {'team_code': fields.String(description='Team code of team', required=True, max_length=3),
-                            'first name': fields.String(description='Name of team', required=True, max_length=45),
-                            'last name': fields.String(description='Hometown of team,', required=True, max_length=45),
-                            'position': fields.String(description="Mascot of team", required=True, max_length=100)
+                           {'team_code': fields.String(description='Team code of coaching staff', required=True,
+                                                       max_length=3),
+                            'first name': fields.String(description='First name of coaching staff', required=True,
+                                                        max_length=45),
+                            'last name': fields.String(description='Last name of coaching staff', required=True,
+                                                       max_length=45),
+                            'position': fields.String(description="Position of coaching staff", required=True,
+                                                      max_length=100)
                             })
 
 

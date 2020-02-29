@@ -32,7 +32,7 @@ class AdminList(Resource):
             with connection.cursor(MySQLdb.cursors.DictCursor) as cursor:
                 cursor.callproc("addAdmin", get_admin_args(request.json))
                 connection.commit()
-            return make_response({'message': 'client has been created successfully.'}, 201)
+            return make_response({'message': 'admin has been created successfully.'}, 201)
         except Exception as e:
             return make_response({"message": str(e)}, 500)
         finally:
@@ -71,7 +71,7 @@ class Admin(Resource):
         finally:
 
             connection.close()
-        return make_response({'message': 'client username has been updated successfully.'}, 201)
+        return make_response({'message': 'admin username has been updated successfully.'}, 201)
 
 
 

@@ -5,8 +5,9 @@ from flask_restplus import Resource, fields
 from restplus import api, db
 
 ns = api.namespace('clients', description='Operations related to clients')
-client = api.model('Client', {'username': fields.String(description='the username', required=True, max_length=20),
-                              'password': fields.String(description='the password', required=True, max_length=20)})
+client = api.model('Client', {'username': fields.String(description='Username of client', required=True, max_length=20),
+                              'password': fields.String(description='Password of client', required=True,
+                                                        max_length=20)})
 
 
 @ns.route('/')
