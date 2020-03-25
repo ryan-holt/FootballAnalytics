@@ -8,7 +8,7 @@ from restplus import api, db
 
 ns = api.namespace('players', description='Operations related to players')
 
-client = client = api.model('Client',
+client = api.model('Client',
                             {'username': fields.String(description='Username of client', required=True, max_length=20),
                              'password': fields.String(description='Password of client', required=True, max_length=20)})
 
