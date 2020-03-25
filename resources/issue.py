@@ -69,6 +69,7 @@ class IssueUsername(Resource):
         return marshal(results, issue), 200
 
     @ns.expect(issue_parser, validate=True)
+    @ns.response(code=201, description='Issue created')
     @ns.response(code=500, description='Internal Server Error')
     def post(self, client_username):
         """

@@ -23,6 +23,7 @@ class CoachingStaffList(Resource):
     Manipulations with coaching staff.
     """
 
+    @ns.response(code=201, description='Coaching staff created')
     @ns.response(code=404, description='Team code not found')
     @ns.response(code=500, description='Internal Server Error')
     @ns.expect(coaching_staff, validate=True)
@@ -50,7 +51,7 @@ class CoachingStaffList(Resource):
             return {"message": str(e)}, 500
         finally:
             connection.close()
-        return {'message': 'team has been created successfully.'}, 201
+        return {'message': 'coaching staff has been created successfully.'}, 201
 
 
 @ns.route('/<string:team_code>', doc={'params': {'team_code': 'The team code of coaching staff'}})

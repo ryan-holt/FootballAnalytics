@@ -106,7 +106,7 @@ class Admin(Resource):
         Update an existing admin's permission level by username.
 
         Use case: An admin can use this endpoint to modify an existing admin's permission level
-        by providing an admin's username. An failure message will be send to the client if no admin exists with the
+        by providing an admin's username. A failure message will be send to the client if no admin exists with the
         provided username.
         """
         data = admin_permission_level_parser.parse_args()

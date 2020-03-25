@@ -25,6 +25,7 @@ class ClientList(Resource):
         return results, 200
 
     @ns.expect(client, validate=True)
+    @ns.response(code=201, description='Client created')
     @ns.response(code=400, description='Client already exists')
     @ns.response(code=500, description='Internal Server Error')
     def post(self):

@@ -58,8 +58,7 @@ play = ns.model('play',
                  'field_position': fields.Integer(description=' Field position of the ball by yard line, denoted as'
                                                               ' negative or plus', required=True),
                  'description': fields.String(description='Text summary of the play, for quick reference to player '
-                                                          'names involved in the play. In some rare cases may exceed '
-                                                          'the max length of 255 characters.', max_length=255),
+                                                          'names involved in the play.', max_length=255),
                  'team_possession': fields.String(description='Team with possession of ball at beginning of the play',
                                                   required=True, max_length=3),
                  'yardage_gained': fields.Integer(description='Yardage gained or lost on the play', max_length=45),

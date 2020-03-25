@@ -40,7 +40,7 @@ class PlayerList(Resource):
         Use Case: This endpoint can be used by a client to see a list of players from all university teams.
         """
         # TODO REMOVE!!!!!!!!!!!!!!!!!!!!!!
-        with open(r'C:\Users\Harsohail\Documents\GIT\RapiPdf\docs\specs\football.json', 'w') as f:
+        with open(r'F:\Documents\RapiPdf\RapiPdf\docs\specs\football.json', 'w') as f:
             json.dump(api.__schema__, f)
         # TODO REMOVE!!!!!!!!!!!!!!!!!!!!!!
 

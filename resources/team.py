@@ -33,6 +33,7 @@ class TeamList(Resource):
         return results, 200
 
     @ns.expect(team, validate=True)
+    @ns.response(code=201, description='Team created')
     @ns.response(code=400, description='Team code already exists')
     @ns.response(code=500, description='Internal Server Error')
     def post(self):
