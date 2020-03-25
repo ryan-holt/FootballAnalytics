@@ -37,15 +37,10 @@ class PlayerList(Resource):
         """
         Gets all players
 
-        Use Case: A user wants to see a list of players from all university teams.
-
-        Example Request:
-        ```
-        $ curl --location --request GET 'http://FootballAnalytics/api/players/'
-        ```
+        Use Case: This endpoint can be used by a client to see a list of players from all university teams.
         """
         # TODO REMOVE!!!!!!!!!!!!!!!!!!!!!!
-        with open(r'F:\Documents\RapiPdf\RapiPdf\docs\specs\football.json', 'w') as f:
+        with open(r'C:\Users\Harsohail\Documents\GIT\RapiPdf\docs\specs\football.json', 'w') as f:
             json.dump(api.__schema__, f)
         # TODO REMOVE!!!!!!!!!!!!!!!!!!!!!!
 
@@ -58,13 +53,16 @@ class PlayerList(Resource):
     @ns.expect(player, validate=True)
     @ns.response(code=404, description='Team code not found')
     @ns.response(code=500, description='Internal Server Error')
+    @ns.response(code=201, description='Player created')
     def post(self):
         """
         Adds a player to an existing team
 
-        Checks if the team code of the provided player already exists. If not, a failure message will be sent to the
-        client indicating that the team code does not exists. For each listed major a record will be created in the
-        majors_in table.
+        Use Case: This endpoint can be used by an admin to create a new player record. The endpoint checks if the
+        team code of the provided player already exists. A failure message will be sent to the
+        client if the team code does not exists.
+
+        For each listed major, a record will be created in the majors_in table.
         """
         data = request.json
         connection = db.engine.raw_connection()
@@ -103,7 +101,8 @@ class Player(Resource):
         """
         Gets player by id
 
-        Returns a player's details by ID.
+        Use Case: This endpoint can be used by a client to view the details of a player by providing the player id.
+        A message is returned to the client if the player id does not exist.
         """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getPlayerByID", [player_id])
@@ -116,12 +115,14 @@ class Player(Resource):
     @ns.expect(player, validate=True)
     @ns.response(code=400, description='Bad request')
     @ns.response(code=500, description='Internal Server Error')
+    @ns.response(code=201, description='Player created')
     def put(self, player_id):
         """
         Update an existing player's details by ID.
 
-        Applies modifications to a player. In the database a new player record is created with the same playerID
-        but a different creation date. This allows us to keep a full history of changes to a player.
+        Use Case: This endpoint can be used by the admin to apply modifications to a player. In the database a
+        new player record is created with the same playerID but a different creation date to keep player history. A
+        failure message is returned if the player id provided does not exist.
         """
         data = request.json
         connection = db.engine.raw_connection()
@@ -141,7 +142,7 @@ class Player(Resource):
             return {"message": str(e)}, 500
         finally:
             connection.close()
-        return {'message': 'player {} has been updated successfully.'.format(player_id)}
+        return {'message': 'player {} has been updated successfully.'.format(player_id)}, 201
 
 
 @ns.route('/<int:player_id>/follows', doc={'params': {'player_id': 'A player ID'}})
@@ -156,9 +157,8 @@ class Player(Resource):
         """
         Gets a player's followers by player ID
 
-        Returns the clients who follow the player with the specified player ID.
-
-        Use Case: FOR ADMIN USE (ADD TO LATER)
+        Use Case: This endpoint can be used by an admin to view the list of clients that follow a specified player by
+        providing a player id. A message is sent to the admin if the player id does not exist.
         """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getClientsFollowedByPlayer", [player_id])
@@ -180,7 +180,8 @@ class PlayerHistory(Resource):
         """
         Gets player history by ID
 
-        Gets every record for a player by ID, showing changes over time.
+        Use Case: This endpoint can be used by a client to view every record for a player by ID, showing
+        changes over time (history of player). A message is returned to the client if the player id does not exist.
         """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getPlayerHistory", [player_id])

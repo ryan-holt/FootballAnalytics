@@ -30,10 +30,9 @@ class CoachingStaffList(Resource):
         """
         Adds a new coaching staff member to a team
 
-        Checks if the team code of the provided coaching staff member already exists. If not, a failure message will be
-        sent to the client indicating that the team code does not exists.
-
-        Use Case: An admin needs to add a new coaching staff member to a team.
+        Use Case: This endpoint is used by an admin to create a new coaching staff member
+        record for their team by providing a team code. A failure message is returned if
+        the provided team code does not exist.
         """
         data = request.json
         connection = db.engine.raw_connection()
@@ -66,7 +65,8 @@ class CoachingStaffTeamList(Resource):
         """
         Gets all coaching staff for a team
 
-        Use case: A client wants to see who is part of the coaching staff for a team.
+        Use case: This endpoint is used by a client to see who is part of the coaching staff for a specific team
+        by providing a team code. A message is returned to the client if the team does not have coaching staff.
         """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getCoachingStaffByTeam", [team_code])
@@ -88,7 +88,8 @@ class CoachingStaff(Resource):
         """
         Gets a coaching staff member by ID
 
-        Returns a coaching staff member's details by ID.
+        Use Case: This endpoint can be used by a client to view the details of a specific coaching staff member
+        by providing their coaching staff id. A message is sent to the client if the coaching staff id does not exist.
         """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getCoachingStaffById", [coaching_staff_id])

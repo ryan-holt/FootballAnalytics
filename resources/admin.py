@@ -38,7 +38,7 @@ class AdminList(Resource):
         """
         Gets all admins
 
-        Use Case: An admin wants to see a list of all admins for the football analytics website.
+        Use Case: An admin can use this endpoint to view all admins of the football analytics system.
         """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getAdmins")
@@ -53,8 +53,8 @@ class AdminList(Resource):
         """
         Adds a new admin
 
-        Creates a new admin record from a provided username and password. A failure message will be sent to the client
-        if the provided username is already taken.
+        Use Case: An admin can use this endpoint to create a new admin record from a provided username and
+        password. A failure message will be sent to the admin if the provided username is already taken.
         """
         connection = db.engine.raw_connection()
         try:
@@ -85,7 +85,9 @@ class Admin(Resource):
         """
         Gets admin by username
 
-        Return's an admin's details by username.
+        Use case: An admin can use this endpoint to view the details of a specific admin by
+        providing a username of the admin. A failure message is sent to the admin if the username
+        provided does not exist.
         """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getAdminByUsername", [username])
@@ -103,8 +105,9 @@ class Admin(Resource):
         """
         Update an existing admin's permission level by username.
 
-        Modifies a admin's permission level. An failure message will be send to the client if no admin exists with the
-        provided details.
+        Use case: An admin can use this endpoint to modify an existing admin's permission level
+        by providing an admin's username. An failure message will be send to the client if no admin exists with the
+        provided username.
         """
         data = admin_permission_level_parser.parse_args()
         connection = db.engine.raw_connection()

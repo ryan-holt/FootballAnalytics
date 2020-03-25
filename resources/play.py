@@ -101,7 +101,8 @@ class PlayGameList(Resource):
         """
         Gets all plays
 
-        Use Case: A user wants to see a list of all plays for a game.
+        Use Case: This endpoint can be used by a client to see a list of plays for a game by providing a game id. A
+        message is returned to the client if no plays exist for the provided game id.
         """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getPlaysByGameId", [game_id])
@@ -126,10 +127,10 @@ class PlayList(Resource):
         """
         Adds a play to an existing game.
 
-        Checks if the player_ids, team code, and game_id already exists. If not, a failure message will be sent to the
-        admin indicating which fields do not exist.
-
-        For each listed penalty a record will be created in the penalty table.
+        Use Case: This endpoint is used by an admin to create a new play record for a game. The endpoints checks if the
+        player_ids, team code, and game_id already exists. If not, a failure message will be sent to the
+        admin indicating which fields do not exist. For each listed penalty a record will be created in the penalty
+        table.
 
         When creating new records in relations such as penalty that require both a player_id and creation
         date the database will use the most recent creation date, since we cannot expect admins to know the creation
@@ -180,13 +181,14 @@ class Play(Resource):
         """
         Gets play by id
 
-        Returns a play's details by ID.
+        Use Case: This endpoint can be used by a client to view the details of a play by providing a play id. A message
+        is returned to the client if no play exists for the provided play id.
         """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getPlayById", [play_id])
             results = cursor.fetchall()
         if not results:
-            return {'message': 'No player exists with the id: {}'.format(play_id)}, 404
+            return {'message': 'No play exists with the id: {}'.format(play_id)}, 404
         results = format_results(results)
         return marshal(results, play), 200
 

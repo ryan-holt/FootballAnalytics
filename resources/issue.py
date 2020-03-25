@@ -37,7 +37,7 @@ class IssueList(Resource):
         """
         Gets all issues sorted by submission date
 
-        Use Case: An admin wants to see a list of all user submitted issues for the football analytics website.
+        Use Case: This endpoint can be used by an admin to see a list of all user submitted issues.
         """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getIssues")
@@ -57,7 +57,9 @@ class IssueUsername(Resource):
         """
         Gets issues submitted by client's username, sorted by date
 
-        Return's all issues submitted by a client sorted by submission date.
+        Use Case: This endpoint can be used by an admin to view all issues submitted by a client sorted by
+        submission date by providing a client's username. A message is returned to the admin if the provided username
+        does not exist.
         """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getIssuesByClientUsername", [client_username])
@@ -72,7 +74,8 @@ class IssueUsername(Resource):
         """
         Adds a new issue by client username
 
-        Use Case: A user finds an issue with the website and submits it for review by admins.
+        Use Case: This endpoint can be used by a client to create a new issue by providing data through a website form
+        to be reviewed by the admins.
         """
         data = issue_parser.parse_args()
         description = data['description']
@@ -97,7 +100,8 @@ class IssueID(Resource):
         """
         Gets issue for specified issue ID
 
-        Return's an issue's details by issue ID.
+        Use Case: This endpoint can be used by an admin to view the details of a specific issue by providing the issue
+        id. A message is returned to the admin if the provided issue id does not exist.
         """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getIssueByID", [issue_id])

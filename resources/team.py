@@ -25,7 +25,7 @@ class TeamList(Resource):
         """
         Gets all teams
 
-        Use Case: A user wants to see a list of all university teams.
+        Use Case: This endpoint can be used by a client to see a list of all teams in the league.
         """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getTeams")
@@ -39,8 +39,9 @@ class TeamList(Resource):
         """
         Adds a new team
 
-        Checks if a team with the provided team code already already exists. If so, A failure message will be sent to
-        the client indicating that the team already exists.
+        Use Case: This endpoint can be used by an admin to create a new team record. The endpoint checks if a team
+        with the provided team code already already exists. If so, a failure message will be sent to
+        the admin indicating that the team already exists.
         """
         data = request.json
         connection = db.engine.raw_connection()
@@ -72,7 +73,8 @@ class Team(Resource):
         """
         Gets a team by team code
 
-        Return's a team's details by team code.
+        Use Case: This endpoint can be used by a client to view a team's details by providing a team code. A message is
+        returned to the client if the provided team code does not exist.
         """
 
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:

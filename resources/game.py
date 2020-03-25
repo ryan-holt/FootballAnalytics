@@ -47,11 +47,13 @@ class GameList(Resource):
     @ns.expect(game, validate=True)
     @ns.response(code=404, description='Team code not found')
     @ns.response(code=500, description='Internal Server Error')
+    @ns.response(code=201, description='Game created')
     def post(self):
         """
         Adds a game
 
-        Checks if the team code for the home and away team already exist. If not, a failure message will be sent to the
+        Use Case: This endpoint can be used by an admin to create a new game record. The endpoint checks if the
+        provided team code for the home and away team already exist. If not, a failure message will be sent to the
         admin indicating that the team code does not exists.
         """
         data = request.json
@@ -85,7 +87,8 @@ class Game(Resource):
         """
         Gets game by id
 
-        Returns a game's basic details by ID.
+        Use Case: This endpoint can be used by a client to view the details of a game by providing
+        a game id. A message is returned to the client if the game id does not exist.
         """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getGameById", [game_id])
@@ -107,7 +110,8 @@ class Game(Resource):
         """
         Gets game statistics by id
 
-        Returns a game's statistics by ID.
+        Use Case: This endpoint can be used by a client to view the statistics of a game by providing a game
+        id. A message is returned to the client if the game id does not exist.
         """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getGameStatsById", [game_id, '', '', '', '', '', '', '', ''])
@@ -141,7 +145,8 @@ class GamePenaltyList(Resource):
         """
         Gets all penalties for a specific game
 
-        Use Case: A client wants to see a list of all penalties for a game using the football analytics website.
+        Use Case: This endpoint can be used by a client to see a list of all penalties for a game by providing a
+        game id. A message is returned to the client if the game id does not exist.
         """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getPenaltiesByGameId", [game_id])

@@ -17,12 +17,7 @@ class ClientList(Resource):
         """
         Gets all clients
 
-        Use Case: An admin wants to see a list of clients using the football analytics website.
-
-        Example Request:
-        ```
-        $ curl --location --request GET 'http://FootballAnalytics/api/clients/'
-        ```
+        Use Case: An admin can use this endpoint to view a list of clients.
         """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getClients")
@@ -36,8 +31,8 @@ class ClientList(Resource):
         """
         Adds a new client
 
-        Creates a new client record from a provided username and password. A failure message will be sent to the user
-        if the provided username is already taken.
+        Use Case: This endpoint is used by a new client to create a new client record given a username and password
+        from a sign up form. A failure message will be sent to the user if the provided username is already taken.
         """
         data = request.json
         name = data.get('username')
@@ -70,7 +65,9 @@ class Client(Resource):
         """
         Gets client by username
 
-        Returns a client's details by username.
+        Use Case: This endpoint can be used by an admin to view the details of a client by providing
+        a client's username. A failure message is returned to the admin if the username provided does
+        not exist.
         """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getClientByUsername", [username])
@@ -84,8 +81,6 @@ class Client(Resource):
 class ClientFollows(Resource):
     """
     Manipulations with players that a specific client follows.
-
-    #TODO USE CASE: for client to see who they follow (CHANGED THIS DESCRIPTION)
     """
 
     @ns.response(code=200, model=player, description='Success')
@@ -94,7 +89,8 @@ class ClientFollows(Resource):
         """
         Gets the players a client follows by client username
 
-        Returns the players who a client follows.
+        Use Case: This endpoint is used by a client to see which players they follow. A message is
+        returned to the client if they do not follow any players.
         """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getPlayersFollowedByClient", [username])

@@ -7,5 +7,5 @@ api = Api(version='1.0', title='Football Analytics API',
                       "####  \n"
                       '#### Team Members:\n'
                       'Harsohail Brar (30041921) - T01\n'
-                      'Ryan Holt         (30038110) - T01\n'
-                      'Gary Wu           (30038609) - T01')
+                      'Ryan Holt         (30038609) - T01\n'
+                      'Gary Wu           (30038110) - T01')
