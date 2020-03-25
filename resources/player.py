@@ -1,11 +1,18 @@
+import json
+
 import MySQLdb
-from flask import request, jsonify, make_response
-from flask_restplus import Resource, fields
+from flask import request
+from flask_restplus import Resource, fields, marshal
 
 from restplus import api, db
 
 ns = api.namespace('players', description='Operations related to players')
-player = ns.model('Player',
+
+client = client = api.model('Client',
+                            {'username': fields.String(description='Username of client', required=True, max_length=20),
+                             'password': fields.String(description='Password of client', required=True, max_length=20)})
+
+player = ns.model('player',
                   {'team_code': fields.String(description='Team code of player', required=True, max_length=3),
                    'player_name': fields.String(description='Name of player', required=True, max_length=45),
                    'jersey_number': fields.Integer(description='Jersey number of player'),
@@ -14,92 +21,174 @@ player = ns.model('Player',
                    'weight': fields.Integer(description='Weight of player', required=True),
                    'year': fields.String(description='The year of player', required=True, max_length=45),
                    'hometown': fields.String(description='Hometown of player', required=True, max_length=45),
-                   'high_school_team': fields.String(description='High School Team of player', max_length=60)
-                   })
+                   'high_school_team': fields.String(description='High School Team of player', required=True,
+                                                     max_length=60),
+                   'major': fields.List(fields.String, description='major', required=True, max_length=45)})
 
 
 @ns.route('/')
 class PlayerList(Resource):
+    """
+    Manipulations with players.
+    """
+
+    @ns.marshal_list_with(player)
     def get(self):
-        """Gets all players"""
+        """
+        Gets all players
+
+        Use Case: A user wants to see a list of players from all university teams.
+
+        Example Request:
+        ```
+        $ curl --location --request GET 'http://FootballAnalytics/api/players/'
+        ```
+        """
+        # TODO REMOVE!!!!!!!!!!!!!!!!!!!!!!
+        with open(r'F:\Documents\RapiPdf\RapiPdf\docs\specs\football.json', 'w') as f:
+            json.dump(api.__schema__, f)
+        # TODO REMOVE!!!!!!!!!!!!!!!!!!!!!!
+
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getPlayers")
             results = cursor.fetchall()
-        return make_response(jsonify(results), 200)
+        results = convert_major_to_list(results)
+        return results, 200
 
     @ns.expect(player, validate=True)
+    @ns.response(code=404, description='Team code not found')
+    @ns.response(code=500, description='Internal Server Error')
     def post(self):
-        """Adds a player to an existing team"""
+        """
+        Adds a player to an existing team
+
+        Checks if the team code of the provided player already exists. If not, a failure message will be sent to the
+        client indicating that the team code does not exists. For each listed major a record will be created in the
+        majors_in table.
+        """
         data = request.json
         connection = db.engine.raw_connection()
         try:
             with connection.cursor(MySQLdb.cursors.DictCursor) as cursor:
                 args = get_player_args(data)
-                cursor.callproc("addPlayer", args)
-                results = cursor.fetchall()
-                cursor.close()
-                connection.commit()
-                if not results:
-                    return make_response({'message': 'The team code {} does not exist.'.format(args[0])}, 404)
+                cursor.callproc("addPlayer", args + ['', '', ''])
+                # Get out parameters
+                cursor.execute('SELECT @_addPlayer_9')
+                fail_msg = cursor.fetchall()[0]['@_addPlayer_9']
+                if fail_msg:
+                    return {'message': '{}'.format(fail_msg)}, 404
+                cursor.execute('SELECT @_addPlayer_10')
+                player_id = cursor.fetchall()[0]['@_addPlayer_10']
+                cursor.execute('SELECT @_addPlayer_11')
+                creation_date = cursor.fetchall()[0]['@_addPlayer_11']
+                for major in data.get('major'):
+                    cursor.callproc("addMajor", [player_id, creation_date, major])
+            connection.commit()
         except Exception as e:
-            return make_response({"message": str(e)}, 500)
+            return {"message": str(e)}, 500
         finally:
             connection.close()
-        return make_response({'message': 'player has been created successfully.'}, 201)
+        return {'message': 'player has been created successfully.'}, 201
 
 
-@ns.route('/<int:player_id>')
+@ns.route('/<int:player_id>', doc={'params': {'player_id': 'A player ID'}})
 class Player(Resource):
+    """
+    Manipulations with a specific player.
+    """
+
+    @ns.response(code=200, model=player, description='Success')
+    @ns.response(code=404, description='Player not found')
     def get(self, player_id):
-        """Gets player by id"""
+        """
+        Gets player by id
+
+        Returns a player's details by ID.
+        """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getPlayerByID", [player_id])
             results = cursor.fetchall()
         if not results:
-            return make_response({'message': 'No player exists with the id: {}'.format(player_id)}, 404)
-        return make_response(jsonify(results), 200)
+            return {'message': 'No player exists with the id: {}'.format(player_id)}, 404
+        results = convert_major_to_list(results)
+        return marshal(results, player), 200
 
     @ns.expect(player, validate=True)
+    @ns.response(code=400, description='Bad request')
+    @ns.response(code=500, description='Internal Server Error')
     def put(self, player_id):
-        """Updates an existing player's information"""
+        """
+        Update an existing player's details by ID.
+
+        Applies modifications to a player. In the database a new player record is created with the same playerID
+        but a different creation date. This allows us to keep a full history of changes to a player.
+        """
         data = request.json
         connection = db.engine.raw_connection()
         try:
             with connection.cursor(MySQLdb.cursors.DictCursor) as cursor:
-                cursor.callproc("updatePlayerById", get_player_args(data) + [player_id, ''])
-                # Get out parameter
+                cursor.callproc("updatePlayerById", get_player_args(data) + [player_id, '', ''])
                 cursor.execute('SELECT @_updatePlayerById_10')
                 fail_msg = cursor.fetchall()[0]['@_updatePlayerById_10']
-            if fail_msg:
-                return make_response({'message': '{}'.format(fail_msg)}, 404)
+                if fail_msg:
+                    return {'message': '{}'.format(fail_msg)}, 400
+                cursor.execute('SELECT @_updatePlayerById_11')
+                creation_date = cursor.fetchall()[0]['@_updatePlayerById_11']
+                for major in data.get('major'):
+                    cursor.callproc("addMajor", [player_id, creation_date, major])
             connection.commit()
         except Exception as e:
-            return make_response({"message": str(e)}, 500)
+            return {"message": str(e)}, 500
         finally:
             connection.close()
-        return make_response({'message': 'player {} has been updated successfully.'.format(player_id)}, 201)
+        return {'message': 'player {} has been updated successfully.'.format(player_id)}
 
-@ns.route('/<int:player_id>/follows')
+
+@ns.route('/<int:player_id>/follows', doc={'params': {'player_id': 'A player ID'}})
 class Player(Resource):
+    """
+    Manipulations with a specific player's followers.
+    """
+
+    @ns.response(code=200, model=client, description='Success')
+    @ns.response(code=404, description='Followers not found')
     def get(self, player_id):
-        """Gets clients followed by player"""
+        """
+        Gets a player's followers by player ID
+
+        Returns the clients who follow the player with the specified player ID.
+
+        Use Case: FOR ADMIN USE (ADD TO LATER)
+        """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getClientsFollowedByPlayer", [player_id])
             results = cursor.fetchall()
         if not results:
-            return make_response({'message': 'No clients follow player with the id: {}'.format(player_id)}, 404)
-        return make_response(jsonify(results), 200)
+            return {'message': 'No clients follow player with the id: {}'.format(player_id)}, 404
+        return marshal(results, client), 200
 
-@ns.route('/<int:player_id>/history')
+
+@ns.route('/<int:player_id>/history', doc={'params': {'player_id': 'A player ID'}})
 class PlayerHistory(Resource):
+    """
+    Manipulations with a specific player's history.
+    """
+
+    @ns.response(code=200, model=player, description='Success')
+    @ns.response(code=404, description='Player history not found')
     def get(self, player_id):
-        """Gets every record for player, showing changes over time"""
+        """
+        Gets player history by ID
+
+        Gets every record for a player by ID, showing changes over time.
+        """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getPlayerHistory", [player_id])
             results = cursor.fetchall()
         if not results:
-            return make_response({'message': 'No player exists with the id: {}'.format(player_id)}, 404)
-        return make_response(jsonify(results), 200)
+            return {'message': 'No player exists with the id: {}'.format(player_id)}, 404
+        results = convert_major_to_list(results)
+        return marshal(results, player), 200
 
 
 def get_player_args(data):
@@ -112,3 +201,18 @@ def get_player_args(data):
             data.get('year'),
             data.get('hometown'),
             data.get('high_school_team')]
+
+
+def convert_major_to_list(results):
+    new_results = []
+    for row in results:
+        if not any(d['player_id'] == row['player_id']
+                   and d['creation_date'] == row['creation_date'] for d in new_results):
+            major_list = [row['major']]
+            for r in results:
+                if row['player_id'] == r['player_id'] and row['creation_date'] == r['creation_date'] and row['major'] \
+                        != r['major']:
+                    major_list.append(r['major'])
+            row['major'] = major_list
+            new_results.append(row)
+    return tuple(new_results)

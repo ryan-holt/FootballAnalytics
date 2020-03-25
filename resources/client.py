@@ -1,30 +1,43 @@
 import MySQLdb
-from flask import request, jsonify, make_response
-from flask_restplus import Resource, fields
+from flask import request
+from flask_restplus import Resource, marshal
 
+from resources.player import player, client, convert_major_to_list
 from restplus import api, db
 
 ns = api.namespace('clients', description='Operations related to clients')
-client = api.model('Client', {'username': fields.String(description='Username of client', required=True, max_length=20),
-                              'password': fields.String(description='Password of client', required=True,
-                                                        max_length=20)})
-
 
 @ns.route('/')
 class ClientList(Resource):
+    """
+    Manipulations with clients.
+    """
+    @ns.marshal_list_with(client)
     def get(self):
         """
         Gets all clients
+
+        Use Case: An admin wants to see a list of clients using the football analytics website.
+
+        Example Request:
+        ```
+        $ curl --location --request GET 'http://FootballAnalytics/api/clients/'
+        ```
         """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getClients")
             results = cursor.fetchall()
-        return make_response(jsonify(results), 200)
+        return results, 200
 
     @ns.expect(client, validate=True)
+    @ns.response(code=400, description='Client already exists')
+    @ns.response(code=500, description='Internal Server Error')
     def post(self):
         """
         Adds a new client
+
+        Creates a new client record from a provided username and password. A failure message will be sent to the user
+        if the provided username is already taken.
         """
         data = request.json
         name = data.get('username')
@@ -32,38 +45,61 @@ class ClientList(Resource):
         connection = db.engine.raw_connection()
         try:
             with connection.cursor(MySQLdb.cursors.DictCursor) as cursor:
-                cursor.callproc("addClient", [name, password])
-                connection.commit()
+                cursor.callproc("addClient", [name, password, ''])
+                # Get out parameter
+                cursor.execute('SELECT @_addClient_2')
+                fail_msg = cursor.fetchall()[0]['@_addClient_2']
+            if fail_msg:
+                return {'message': '{}'.format(fail_msg)}, 400
+            connection.commit()
         except Exception as e:
-            return make_response({"message": str(e)}, 500)
+            return {"message": str(e)}, 500
         finally:
             connection.close()
-        return make_response({'message': 'client has been created successfully.'}, 201)
+        return {'message': 'client has been created successfully.'}, 201
 
 
-@ns.route('/<string:username>')
+@ns.route('/<string:username>', doc={'params': {'username': 'A client username'}})
 class Client(Resource):
+    """
+    Manipulations with a specific client.
+    """
+    @ns.response(code=200, model=client, description='Success')
+    @ns.response(code=404, description='Client not found')
     def get(self, username):
         """
-        Gets the specified client
+        Gets client by username
+
+        Returns a client's details by username.
         """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getClientByUsername", [username])
             results = cursor.fetchall()
         if not results:
-            return make_response({'message': 'No client exists with the username: {}'.format(username)}, 404)
-        return make_response(jsonify(results), 200)
+            return {'message': 'No client exists with the username: {}'.format(username)}, 404
+        return marshal(results, client), 200
 
 
-@ns.route('/<string:username>/follows')
+@ns.route('/<string:username>/follows', doc={'params': {'username': 'A client username'}})
 class ClientFollows(Resource):
+    """
+    Manipulations with players that a specific client follows.
+
+    #TODO USE CASE: for client to see who they follow (CHANGED THIS DESCRIPTION)
+    """
+
+    @ns.response(code=200, model=player, description='Success')
+    @ns.response(code=404, description='Players not found')
     def get(self, username):
         """
-        Gets the players a client follows
+        Gets the players a client follows by client username
+
+        Returns the players who a client follows.
         """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getPlayersFollowedByClient", [username])
             results = cursor.fetchall()
         if not results:
-            return make_response({'message': 'No players are followed by client: {}'.format(username)}, 404)
-        return make_response(jsonify(results), 200)
+            return {'message': 'No players are followed by client: {}'.format(username)}, 404
+        results = convert_major_to_list(results)
+        return marshal(results, player), 200

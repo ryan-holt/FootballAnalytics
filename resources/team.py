@@ -1,6 +1,6 @@
 import MySQLdb
-from flask import request, jsonify, make_response
-from flask_restplus import Resource, fields
+from flask import request
+from flask_restplus import Resource, fields, marshal
 
 from restplus import api, db
 
@@ -16,38 +16,71 @@ team = api.model('Team',
 
 @ns.route('/')
 class TeamList(Resource):
+    """
+    Manipulations with teams.
+    """
+
+    @ns.marshal_list_with(team)
     def get(self):
-        """Gets all teams"""
+        """
+        Gets all teams
+
+        Use Case: A user wants to see a list of all university teams.
+        """
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getTeams")
             results = cursor.fetchall()
-        return make_response(jsonify(results), 200)
+        return results, 200
 
     @ns.expect(team, validate=True)
+    @ns.response(code=400, description='Team code already exists')
+    @ns.response(code=500, description='Internal Server Error')
     def post(self):
-        """Adds a new team"""
+        """
+        Adds a new team
+
+        Checks if a team with the provided team code already already exists. If so, A failure message will be sent to
+        the client indicating that the team already exists.
+        """
         data = request.json
         connection = db.engine.raw_connection()
         try:
             with connection.cursor(MySQLdb.cursors.DictCursor) as cursor:
-                cursor.callproc("addTeam", get_team_args(data))
-                connection.commit()
+                cursor.callproc("addTeam", get_team_args(data) + [''])
+                # Get out parameter
+                cursor.execute('SELECT @_addTeam_5')
+                fail_msg = cursor.fetchall()[0]['@_addTeam_5']
+                if fail_msg:
+                    return {'message': '{}'.format(fail_msg)}, 400
+            connection.commit()
         except Exception as e:
-            return make_response({"message": str(e)}, 500)
+            return {"message": str(e)}, 500
         finally:
             connection.close()
-        return make_response({'message': 'team has been created successfully.'}, 201)
+        return {'message': 'team has been created successfully.'}, 201
 
 
-@ns.route('/<string:team_code>')
+@ns.route('/<string:team_code>', doc={'params': {'team_code': 'A team code'}})
 class Team(Resource):
+    """
+    Manipulations with a specific team.
+    """
+
+    @ns.response(code=200, model=team, description='Success')
+    @ns.response(code=404, description='Team not found')
     def get(self, team_code):
-        """Gets a team by team code"""
-        if team_code:
-            with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
-                cursor.callproc("getTeamByTeamCode", [team_code])
-                results = cursor.fetchall()
-            return make_response(jsonify(results), 200)
+        """
+        Gets a team by team code
+
+        Return's a team's details by team code.
+        """
+
+        with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
+            cursor.callproc("getTeamByTeamCode", [team_code])
+            results = cursor.fetchall()
+        if not results:
+            return {'message': 'No team exists with the team code: {}'.format(team_code)}, 404
+        return marshal(results, team), 200
 
 
 def get_team_args(data):

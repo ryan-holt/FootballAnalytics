@@ -1,6 +1,6 @@
 import MySQLdb
-from flask import request, jsonify, make_response
-from flask_restplus import Resource, fields
+from flask import request
+from flask_restplus import Resource, fields, marshal
 
 from restplus import api, db
 
@@ -17,52 +17,85 @@ coaching_staff = api.model('Coaching_staff',
                             })
 
 
-@ns.route('/<string:team_code>')
-class CoachingStaffList(Resource):
-    def get(self, team_code):
-        """Gets all coaching staff for a team"""
-        with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
-            cursor.callproc("getCoachingStaffByTeam", [team_code])
-            results = cursor.fetchall()
-            if not results:
-                return make_response({'message': 'The team code {} does not exist.'.format(team_code)}, 404)
-        return make_response(jsonify(results), 200)
-
-
-@ns.route('/<int:coaching_staff_id>')
-class CoachingStaff(Resource):
-    def get(self, coaching_staff_id):
-        """Gets a coaching staff member by id"""
-        with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
-            cursor.callproc("getCoachingStaffById", [coaching_staff_id])
-            results = cursor.fetchall()
-            if not results:
-                return make_response(
-                    {'message': 'No coaching staff member exists with id: {}'.format(coaching_staff_id)}, 404)
-        return make_response(jsonify(results), 200)
-
-
 @ns.route('/')
-class AddCoachingStaff(Resource):
+class CoachingStaffList(Resource):
+    """
+    Manipulations with coaching staff.
+    """
+
+    @ns.response(code=404, description='Team code not found')
+    @ns.response(code=500, description='Internal Server Error')
     @ns.expect(coaching_staff, validate=True)
     def post(self):
-        """Adds a new coaching staff member to a team"""
+        """
+        Adds a new coaching staff member to a team
+
+        Checks if the team code of the provided coaching staff member already exists. If not, a failure message will be
+        sent to the client indicating that the team code does not exists.
+
+        Use Case: An admin needs to add a new coaching staff member to a team.
+        """
         data = request.json
         connection = db.engine.raw_connection()
         try:
             args = get_coaching_staff_args(data)
             with connection.cursor(MySQLdb.cursors.DictCursor) as cursor:
-                cursor.callproc("addCoachingStaffByTeam", args)
-                results = cursor.fetchall()
-                cursor.close()
-                connection.commit()
-                if not results:
-                    return make_response({'message': 'The team code {} does not exist.'.format(args[0])}, 404)
+                cursor.callproc("addCoachingStaffByTeam", args + [''])
+                # Get out parameter
+                cursor.execute('SELECT @_addCoachingStaffByTeam_4')
+                fail_msg = cursor.fetchall()[0]['@_addCoachingStaffByTeam_4']
+                if fail_msg:
+                    return {'message': '{}'.format(fail_msg)}, 400
+            connection.commit()
         except Exception as e:
-            return make_response({"message": str(e)}, 500)
+            return {"message": str(e)}, 500
         finally:
             connection.close()
-        return make_response({'message': 'team has been created successfully.'}, 201)
+        return {'message': 'team has been created successfully.'}, 201
+
+
+@ns.route('/<string:team_code>', doc={'params': {'team_code': 'The team code of coaching staff'}})
+class CoachingStaffTeamList(Resource):
+    """
+    Manipulations with a team's coaching staff.
+    """
+
+    @ns.response(code=200, model=coaching_staff, description='Success')
+    @ns.response(code=404, description='Coaching staff not found')
+    def get(self, team_code):
+        """
+        Gets all coaching staff for a team
+
+        Use case: A client wants to see who is part of the coaching staff for a team.
+        """
+        with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
+            cursor.callproc("getCoachingStaffByTeam", [team_code])
+            results = cursor.fetchall()
+            if not results:
+                return {'message': 'Coaching staff not found for team code: {}.'.format(team_code)}, 404
+        return marshal(results, coaching_staff), 200
+
+
+@ns.route('/<int:coaching_staff_id>',  doc={'params': {'coaching_staff_id': 'A coaching staff member\'s ID'}})
+class CoachingStaff(Resource):
+    """
+    Manipulations with a specific coaching staff member.
+    """
+
+    @ns.response(code=200, model=coaching_staff, description='Success')
+    @ns.response(code=404, description='Coaching staff member not found')
+    def get(self, coaching_staff_id):
+        """
+        Gets a coaching staff member by ID
+
+        Returns a coaching staff member's details by ID.
+        """
+        with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
+            cursor.callproc("getCoachingStaffById", [coaching_staff_id])
+            results = cursor.fetchall()
+            if not results:
+                return {'message': 'No coaching staff member exists with id: {}'.format(coaching_staff_id)}, 404
+        return marshal(results, coaching_staff), 200
 
 
 def get_coaching_staff_args(data):

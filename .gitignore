@@ -56,7 +56,5 @@ ENV/
 .mypy_cache/
 /migrations
 
-/config.py
-
 #vscode
 .vscode
