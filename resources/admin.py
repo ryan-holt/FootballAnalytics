@@ -1,6 +1,6 @@
 import MySQLdb
 from flask import request
-from flask_restplus import Resource, fields, marshal
+from flask_restplus import Resource, fields, marshal, reqparse
 
 from restplus import api, db
 
@@ -9,6 +9,21 @@ admin = api.model('Admin',
                   {'username': fields.String(description='Username of admin', required=True, max_length=20),
                    'password': fields.String(description='Password of admin', required=True, max_length=20),
                    'permission_level': fields.Integer(description='Permission level given to admin', required=True)})
+
+
+def is_int():
+    def validate(s):
+        try:
+            if int(s):
+                return s
+        except ValueError as e:
+            raise ValueError("new_permission_level must be an integer")
+
+    return validate
+
+
+admin_permission_level_parser = reqparse.RequestParser(bundle_errors=True)
+admin_permission_level_parser.add_argument('new_permission_level', required=True, type=is_int(), location='form')
 
 
 @ns.route('/')
@@ -79,25 +94,26 @@ class Admin(Resource):
             return {'message': 'No admin exists with the username: {}'.format(username)}, 404
         return marshal(results, admin), 200
 
-    @ns.expect(admin, validate=True)
+    @ns.expect(admin_permission_level_parser, validate=True)
     @ns.response(code=200, description='Admin updated')
+    @ns.response(code=400, description='Bad Request')
     @ns.response(code=404, description='Admin not found')
     @ns.response(code=500, description='Internal Server Error')
-    def put(self, permission_level):
+    def put(self, username):
         """
         Update an existing admin's permission level by username.
 
         Modifies a admin's permission level. An failure message will be send to the client if no admin exists with the
         provided details.
         """
-        new_permission_level = permission_level
+        data = admin_permission_level_parser.parse_args()
         connection = db.engine.raw_connection()
         try:
             with connection.cursor(MySQLdb.cursors.DictCursor) as cursor:
-                cursor.callproc("updateAdminPermissionLevel", get_admin_args(request.json) + [new_permission_level])
+                cursor.callproc("updateAdminPermissionLevel", [username, data['new_permission_level']])
                 results = cursor.fetchall()
             if not results[0]['ROW_COUNT()']:
-                return {'message': 'No admin exists with the criteria: {}'.format(request.json)}, 404
+                return {'message': 'No admin exists with the criteria: {}'.format(data)}, 404
             connection.commit()
         except Exception as e:
             return {"message": str(e)}, 500

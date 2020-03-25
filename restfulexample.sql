@@ -36,7 +36,7 @@ CREATE TABLE `admin` (
 
 LOCK TABLES `admin` WRITE;
 /*!40000 ALTER TABLE `admin` DISABLE KEYS */;
-INSERT INTO `admin` VALUES ('harsohailB','admin',4),('rh3','ryanPassword',3),('string2','2324',0);
+INSERT INTO `admin` VALUES ('harsohailB','admin',69),('rh3','ryanPassword',3),('string2','2324',0);
 /*!40000 ALTER TABLE `admin` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1472,7 +1472,7 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `updateAdminUsername` */;
+/*!50003 DROP PROCEDURE IF EXISTS `updateAdminPermissionLevel` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -1482,14 +1482,11 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `updateAdminUsername`(IN old_username varchar(20), IN password varchar(20),
-                                                           IN permission_level int, IN new_username varchar(20))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateAdminPermissionLevel`(IN in_username varchar(20), IN new_permission_level int)
 BEGIN
     UPDATE admin
-    SET admin.username = new_username
-    WHERE admin.username = old_username
-      AND admin.password = password
-      AND admin.permission_level = permission_level;
+    SET admin.permission_level = new_permission_level
+    WHERE admin.username = in_username;
     SELECT ROW_COUNT();
 END ;;
 DELIMITER ;
@@ -1549,4 +1546,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-03-24 23:49:56
+-- Dump completed on 2020-03-25 14:17:54
