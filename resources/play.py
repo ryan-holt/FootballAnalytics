@@ -88,30 +88,6 @@ play = ns.model('play',
                  })
 
 
-@ns.route('/<string:game_id>', doc={'params': {'game_id': 'A game ID'}})
-class PlayGameList(Resource):
-    """
-    Manipulations with plays for a specific game.
-    """
-
-    @ns.response(code=200, model=play, description='Success')
-    @ns.response(code=404, description='Plays not found')
-    def get(self, game_id):
-        """
-        Gets all plays
-
-        Use Case: This endpoint can be used by a client to see a list of plays for a game by providing a game id. A
-        message is returned to the client if no plays exist for the provided game id.
-        """
-        with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
-            cursor.callproc("getPlaysByGameId", [game_id])
-            results = cursor.fetchall()
-            if not results:
-                return {'message': 'Plays not found for game ID: {}.'.format(game_id)}, 404
-        results = format_results(results)
-        return marshal(results, play), 200
-
-
 @ns.route('/')
 class PlayList(Resource):
     """
