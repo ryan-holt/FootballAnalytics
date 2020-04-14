@@ -39,11 +39,6 @@ class PlayerList(Resource):
 
         Use Case: This endpoint can be used by a client to see a list of players from all university teams.
         """
-        # TODO REMOVE!!!!!!!!!!!!!!!!!!!!!!
-        with open(r'F:\Documents\RapiPdf\RapiPdf\docs\specs\football.json', 'w') as f:
-            json.dump(api.__schema__, f)
-        # TODO REMOVE!!!!!!!!!!!!!!!!!!!!!!
-
         with db.engine.raw_connection().cursor(MySQLdb.cursors.DictCursor) as cursor:
             cursor.callproc("getPlayers")
             results = cursor.fetchall()

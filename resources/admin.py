@@ -123,7 +123,7 @@ class Admin(Resource):
         finally:
 
             connection.close()
-        return {'message': 'admin username has been updated successfully.'}, 200
+        return {'message': "admin's permission level has been updated successfully."}, 200
 
 
 def get_admin_args(data):
