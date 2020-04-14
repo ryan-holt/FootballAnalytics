@@ -8,9 +8,9 @@ ns = api.namespace('coaching_staff', description='Operations related to coaching
 coaching_staff = api.model('Coaching_staff',
                            {'team_code': fields.String(description='Team code of coaching staff', required=True,
                                                        max_length=3),
-                            'first name': fields.String(description='First name of coaching staff', required=True,
+                            'first_name': fields.String(description='First name of coaching staff', required=True,
                                                         max_length=45),
-                            'last name': fields.String(description='Last name of coaching staff', required=True,
+                            'last_name': fields.String(description='Last name of coaching staff', required=True,
                                                        max_length=45),
                             'position': fields.String(description="Position of coaching staff", required=True,
                                                       max_length=100)
