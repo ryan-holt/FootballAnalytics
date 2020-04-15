@@ -44,11 +44,10 @@ class PlayList(Resource):
                 play_id = cursor.fetchall()[0]['@_addPlayByGameId_28']
                 penalties = data.get('penalties')
                 if penalties:
-                    for pen in penalties:
-                        if pen['player_id'] is not None:
+                    for p in penalties:
+                        if p['player_id'] is not None:
                             cursor.callproc("addPenalty",
-                                            [play_id, pen['player_id'], pen['penalty_yardage'], pen['penalty_type'],
-                                             ''])
+                                            [play_id, p['player_id'], p['penalty_yardage'], p['penalty_type'], ''])
                             cursor.execute('SELECT @_addPenalty_4')
                             fail_msg = cursor.fetchall()[0]['@_addPenalty_4']
                             if fail_msg:
