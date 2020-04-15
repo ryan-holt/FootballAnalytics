@@ -1,30 +1,12 @@
-import json
-
 import MySQLdb
 from flask import request
-from flask_restplus import Resource, fields, marshal
+from flask_restplus import Resource, marshal
 
+from models.client import client
+from models.player import player, convert_major_to_list, get_player_args
 from restplus import api, db
 
 ns = api.namespace('players', description='Operations related to players')
-
-client = api.model('Client',
-                            {'username': fields.String(description='Username of client', required=True, max_length=20),
-                             'password': fields.String(description='Password of client', required=True, max_length=20)})
-
-player = ns.model('player',
-                  {'team_code': fields.String(description='Team code of player', required=True, max_length=3),
-                   'player_name': fields.String(description='Name of player', required=True, max_length=45),
-                   'jersey_number': fields.Integer(description='Jersey number of player'),
-                   'height': fields.String(description='Height of player in centimeters', required=True, max_length=5),
-                   'position': fields.String(description='Position of player', required=True, max_length=45),
-                   'weight': fields.Integer(description='Weight of player', required=True),
-                   'year': fields.String(description='The year of player', required=True, max_length=45),
-                   'hometown': fields.String(description='Hometown of player', required=True, max_length=45),
-                   'high_school_team': fields.String(description='High School Team of player', required=True,
-                                                     max_length=60),
-                   'major': fields.List(fields.String, description='major', required=True, max_length=45)})
-
 
 @ns.route('/')
 class PlayerList(Resource):
@@ -186,29 +168,3 @@ class PlayerHistory(Resource):
         results = convert_major_to_list(results)
         return marshal(results, player), 200
 
-
-def get_player_args(data):
-    return [data.get('team_code'),
-            data.get('player_name'),
-            data.get('jersey_number'),
-            data.get('height'),
-            data.get('position'),
-            data.get('weight'),
-            data.get('year'),
-            data.get('hometown'),
-            data.get('high_school_team')]
-
-
-def convert_major_to_list(results):
-    new_results = []
-    for row in results:
-        if not any(d['player_id'] == row['player_id']
-                   and d['creation_date'] == row['creation_date'] for d in new_results):
-            major_list = [row['major']]
-            for r in results:
-                if row['player_id'] == r['player_id'] and row['creation_date'] == r['creation_date'] and row['major'] \
-                        != r['major']:
-                    major_list.append(r['major'])
-            row['major'] = major_list
-            new_results.append(row)
-    return tuple(new_results)

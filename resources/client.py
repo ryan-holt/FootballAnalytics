@@ -2,7 +2,8 @@ import MySQLdb
 from flask import request
 from flask_restplus import Resource, marshal
 
-from resources.player import player, client, convert_major_to_list
+from models.client import client
+from models.player import convert_major_to_list, player
 from restplus import api, db
 
 ns = api.namespace('clients', description='Operations related to clients')

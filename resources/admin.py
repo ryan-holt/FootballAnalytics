@@ -1,30 +1,11 @@
 import MySQLdb
 from flask import request
-from flask_restplus import Resource, fields, marshal, reqparse
+from flask_restplus import Resource, marshal
 
+from models.admin import admin, admin_permission_level_parser
 from restplus import api, db
 
 ns = api.namespace('admins', description='Operations related to admins')
-admin = api.model('Admin',
-                  {'username': fields.String(description='Username of admin', required=True, max_length=20),
-                   'password': fields.String(description='Password of admin', required=True, max_length=20),
-                   'permission_level': fields.Integer(description='Permission level given to admin', required=True)})
-
-
-def is_int():
-    def validate(s):
-        try:
-            if int(s):
-                return s
-        except ValueError as e:
-            raise ValueError("new_permission_level must be an integer")
-
-    return validate
-
-
-admin_permission_level_parser = reqparse.RequestParser(bundle_errors=True)
-admin_permission_level_parser.add_argument('new_permission_level', required=True, type=is_int(), location='form')
-
 
 @ns.route('/')
 class AdminList(Resource):

@@ -1,30 +1,10 @@
 import MySQLdb
-from flask_restplus import Resource, fields, reqparse, marshal
+from flask_restplus import Resource, marshal
 
+from models.issue import issue, issue_parser
 from restplus import api, db
 
 ns = api.namespace('issues', description='Operations related to system issues')
-issue = api.model('Issue',
-                  {
-                      'client_username': fields.String(description='username of client who reported the issue',
-                                                       required=True, max_length=20),
-                      'description': fields.String(description='description of the issue', required=True,
-                                                   max_length=200),
-                      'submission_date': fields.DateTime(description='submission date of the issue')
-                  })
-
-
-def max_length(max_len):
-    def validate(s):
-        if len(s) <= max_len:
-            return s
-        raise ValueError("String must be at most %i characters long" % max_len)
-    return validate
-
-
-issue_parser = reqparse.RequestParser(bundle_errors=True)
-issue_parser.add_argument('description', required=True, type=max_length(200), location='form')
-
 
 @ns.route('/')
 class IssueList(Resource):

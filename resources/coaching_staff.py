@@ -1,20 +1,11 @@
 import MySQLdb
 from flask import request
-from flask_restplus import Resource, fields, marshal
+from flask_restplus import Resource, marshal
 
+from models.coaching_staff import coaching_staff
 from restplus import api, db
 
 ns = api.namespace('coaching_staff', description='Operations related to coaching staff')
-coaching_staff = api.model('Coaching_staff',
-                           {'team_code': fields.String(description='Team code of coaching staff', required=True,
-                                                       max_length=3),
-                            'first_name': fields.String(description='First name of coaching staff', required=True,
-                                                        max_length=45),
-                            'last_name': fields.String(description='Last name of coaching staff', required=True,
-                                                       max_length=45),
-                            'position': fields.String(description="Position of coaching staff", required=True,
-                                                      max_length=100)
-                            })
 
 
 @ns.route('/')
