@@ -11,16 +11,18 @@ from resources.player import ns as player_ns
 from resources.team import ns as team_ns
 from restplus import db, api
 
+# A list of namespaces that the API uses
 namespaces = [admin_ns, client_ns, coaching_staff_ns, game_ns,
               issue_ns, play_ns, player_ns, team_ns]
 
-
+# Creates the Flask app
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
     blueprint = Blueprint('api', __name__, url_prefix='/api')
     api.init_app(blueprint)
 
+    # Iterates over the namespaces list and adds them to the API
     for namespace in namespaces:
         api.add_namespace(namespace)
 
@@ -29,7 +31,7 @@ def create_app():
 
     return app
 
-
+# Main function to run the Flask app
 if __name__ == '__main__':
     app = create_app()
     app.run()

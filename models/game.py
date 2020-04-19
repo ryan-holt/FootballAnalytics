@@ -2,7 +2,10 @@ from flask_restplus import fields
 
 from restplus import api
 
+# A game namespace to be used by the API in app.py
 ns = api.namespace('game', description='Operations related to games')
+
+# The game stats model to enforce inputs arguments from the API
 game_stats = api.model('game_stats',
                       {'home_team': fields.String(description='Team code of home team', required=True, max_length=3),
                        'home_points': fields.Integer(description='Number of points for the home team', required=True),
@@ -22,7 +25,7 @@ game_stats = api.model('game_stats',
                                                             max_length=45)
                        })
 
-
+# The game model to enforce inputs arguments from the API
 game = ns.model('game',
                 {'home_team': fields.String(description='Team code of home team', required=True, max_length=3),
                  'away_team': fields.String(description='Team code of away team', required=True, max_length=3),
@@ -31,6 +34,8 @@ game = ns.model('game',
                  'attendance': fields.Integer(description='The attendance at the game'),
                  'duration': fields.Integer(description='Game duration', required=True, max_length=45),
                  'start_time': fields.String(description='The starting time of the game', required=True)})
+
+# The game post model to enforce inputs arguments from the API
 game_post_model = ns.model('game',
                 {'home_team': fields.String(description='Team code of home team', required=True, max_length=3),
                  'home_points': fields.Integer(description='Number of points for the home team', required=True),
@@ -42,6 +47,7 @@ game_post_model = ns.model('game',
                  'duration': fields.Integer(description='Game duration', required=True, max_length=45),
                  'start_time': fields.String(description='The starting time of the game', required=True)})
 
+# Gets arguments from API's input data
 def get_game_args(data):
     return [data.get('home_team'),
             data.get('home_points'),

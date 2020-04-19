@@ -1,6 +1,7 @@
 from flask_restplus import fields
 from restplus import api
 
+# The kick model to enforce inputs arguments from the API
 kick = api.model('kick',
                  {
                      'kicker': fields.Integer(description='Player ID of the kicker on the play.', required=False),
@@ -14,6 +15,7 @@ kick = api.model('kick',
                          required=False, max_length=2),
                  })
 
+# The fumble model to enforce inputs arguments from the API
 fumble = api.model('fumble',
                    {
                        'fum_player_id': fields.Integer(description='Player ID of player who fumbled the ball.'),
@@ -24,6 +26,7 @@ fumble = api.model('fumble',
                                                            'noted. Otherwise NULL.', max_length=1)
                    })
 
+# The player pass model to enforce inputs arguments from the API
 player_pass = api.model('pass',
                         {
                             'quarterback_player_id': fields.Integer(
@@ -34,6 +37,7 @@ player_pass = api.model('pass',
                                                          max_length=45)
                         })
 
+# The penalty model to enforce inputs arguments from the API
 penalty = api.model('penalty',
                     {
                         'player_id': fields.Integer(
@@ -43,9 +47,10 @@ penalty = api.model('penalty',
                                                       max_length=45)
                     })
 
-# Add namespace in model so that we can define the API model it
+# A plays namespace to be used by the API in app.py
 ns = api.namespace('plays', description='Operations related to plays')
 
+# The plays model to enforce inputs arguments from the API
 play = ns.model('play',
                 {'game_id': fields.Integer(description='The game identification number', required=True),
                  'quarter': fields.Integer(description='Quarter of the game', required=True),
@@ -85,20 +90,28 @@ play = ns.model('play',
                  'penalties': fields.List(fields.Nested(penalty))
                  })
 
-
+# Gets arguments from API's input data
 def get_play_args(data):
+    # Get all the data from a data object such as JSON
     kick_arg = data.get('kick')
     fumble_arg = data.get('fumble')
     player_pass_arg = data.get('pass')
+
+    # Create empty lists for kick, fumble, and pass
     kick_list, fumble_list, pass_list = [None, None, None], [None, None, None, None], [None, None]
+
+    # If there was a kick argument, get the data regarding the kick from the JSON and add it to the list
     if kick_arg:
         kick_list = [kick_arg.get('kicker'), kick_arg.get('kick_yardage'), kick_arg.get('kick_result')]
+    # If there was a fumble argument, get the data regarding the fumble from the JSON and add it to the list
     if fumble_arg:
         fumble_list = [fumble_arg.get('fum_player_id'), fumble_arg.get('rec_player_id'),
                        fumble_arg.get('fumble_yardage'), fumble_arg.get('forced')]
+    # If there was a player pass argument, get the data regarding the player pass from the JSON and add it to the list
     if player_pass_arg:
         pass_list = [player_pass_arg.get('quarterback_player_id'), player_pass_arg.get('pass_result')]
 
+    # Return the data of the play
     return [data.get('game_id'),
             data.get('quarter'),
             data.get('time'),
@@ -121,7 +134,7 @@ def get_play_args(data):
             data.get('hurries_quarterback'),
             data.get('calls_timeout')]
 
-
+# TODO comment this
 def format_results(results):
     results = convert_penalty_to_list(results)
     for r in results:
@@ -146,7 +159,7 @@ def format_results(results):
         r['calls_timeout'] = r.pop('team_code')
     return results
 
-
+# TODO comment this
 def convert_penalty_to_list(results):
     new_results = []
     for row in results:
