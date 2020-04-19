@@ -2,7 +2,7 @@ import MySQLdb
 from flask import request
 from flask_restplus import Resource, marshal
 
-from models.coaching_staff import coaching_staff
+from models.coaching_staff import coaching_staff, get_coaching_staff_args
 from restplus import api, db
 
 ns = api.namespace('coaching_staff', description='Operations related to coaching staff')
@@ -89,10 +89,3 @@ class CoachingStaff(Resource):
             if not results:
                 return {'message': 'No coaching staff member exists with id: {}'.format(coaching_staff_id)}, 404
         return marshal(results, coaching_staff), 200
-
-
-def get_coaching_staff_args(data):
-    return [data.get('team_code'),
-            data.get('first_name'),
-            data.get('last_name'),
-            data.get('position')]
