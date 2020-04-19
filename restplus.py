@@ -1,6 +1,7 @@
 from flask_restplus import Api
 from flask_sqlalchemy import SQLAlchemy
 
+# Setup for the database using SQLAlchemy and the API using Restplus
 db = SQLAlchemy()
 api = Api(version='1.0', title='Football Analytics API',
           description='#### A REST API for university football analytics.\n'

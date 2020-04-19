@@ -1,8 +1,10 @@
 from flask_restplus import fields
 from restplus import api
 
+# A players namespace to be used by the API in app.py
 ns = api.namespace('players', description='Operations related to players')
 
+# The player model to enforce inputs arguments from the API
 player = ns.model('player',
                   {'team_code': fields.String(description='Team code of player', required=True, max_length=3),
                    'player_name': fields.String(description='Name of player', required=True, max_length=45),
@@ -16,7 +18,7 @@ player = ns.model('player',
                                                      max_length=60),
                    'major': fields.List(fields.String, description='major', required=True, max_length=45)})
 
-
+# Gets arguments from API's input data
 def get_player_args(data):
     return [data.get('team_code'),
             data.get('player_name'),
@@ -28,7 +30,7 @@ def get_player_args(data):
             data.get('hometown'),
             data.get('high_school_team')]
 
-
+# TODO comment this
 def convert_major_to_list(results):
     new_results = []
     for row in results:

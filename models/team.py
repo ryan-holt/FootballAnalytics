@@ -1,6 +1,7 @@
 from flask_restplus import fields
 from restplus import api
 
+# The team model to enforce inputs arguments from the API
 team = api.model('Team',
                  {'team_code': fields.String(description='Team code of team', required=True, max_length=3),
                   'team_name': fields.String(description='Name of team', required=True, max_length=45),
@@ -9,7 +10,7 @@ team = api.model('Team',
                   'university': fields.String(description='University of team', required=True, max_length=45)
                   })
 
-
+# Gets arguments from API's input data
 def get_team_args(data):
     return [data.get('team_code'),
             data.get('team_name'),
