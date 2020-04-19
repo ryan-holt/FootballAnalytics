@@ -1,13 +1,13 @@
--- MySQL dump 10.13  Distrib 8.0.15, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.18, for Win64 (x86_64)
 --
 -- Host: localhost    Database: footballanalyticsdb
 -- ------------------------------------------------------
--- Server version	8.0.15
+-- Server version	8.0.19
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
- SET NAMES utf8 ;
+/*!50503 SET NAMES utf8 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -21,11 +21,11 @@
 
 DROP TABLE IF EXISTS `admin`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `admin` (
   `username` varchar(20) NOT NULL,
   `password` varchar(20) NOT NULL,
-  `permission_level` int(11) NOT NULL,
+  `permission_level` int NOT NULL,
   PRIMARY KEY (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -46,9 +46,9 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `calls_timeout`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `calls_timeout` (
-  `play_id` int(11) NOT NULL,
+  `play_id` int NOT NULL,
   `team_code` varchar(3) DEFAULT NULL,
   PRIMARY KEY (`play_id`),
   KEY `calls_timeout_play_id_fk_idx` (`team_code`),
@@ -72,7 +72,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `client`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `client` (
   `username` varchar(20) NOT NULL,
   `password` varchar(20) NOT NULL,
@@ -97,9 +97,9 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `coaching_staff`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `coaching_staff` (
-  `coaching_staff_id` int(11) NOT NULL AUTO_INCREMENT,
+  `coaching_staff_id` int NOT NULL AUTO_INCREMENT,
   `team_code` varchar(3) DEFAULT NULL,
   `first_name` varchar(45) DEFAULT NULL,
   `last_name` varchar(45) DEFAULT NULL,
@@ -126,9 +126,9 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `follows`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `follows` (
-  `player_id` int(11) NOT NULL,
+  `player_id` int NOT NULL,
   `username` varchar(20) NOT NULL,
   PRIMARY KEY (`player_id`,`username`),
   KEY `follows_client_username_fk` (`username`),
@@ -153,14 +153,14 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `fumble`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `fumble` (
-  `play_id` int(11) NOT NULL,
-  `fum_player_id` int(11) DEFAULT NULL,
+  `play_id` int NOT NULL,
+  `fum_player_id` int DEFAULT NULL,
   `fum_creation_date` varchar(45) DEFAULT NULL,
-  `rec_player_id` int(11) DEFAULT NULL,
+  `rec_player_id` int DEFAULT NULL,
   `rec_creation_date` varchar(45) DEFAULT NULL,
-  `fumble_yardage` int(11) NOT NULL,
+  `fumble_yardage` int NOT NULL,
   `forced` varchar(1) DEFAULT NULL,
   PRIMARY KEY (`play_id`),
   KEY `fumble_fum_player_id_creation_date_fk_idx` (`fum_player_id`,`fum_creation_date`),
@@ -187,17 +187,17 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `game`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `game` (
-  `game_id` int(11) NOT NULL AUTO_INCREMENT,
+  `game_id` int NOT NULL AUTO_INCREMENT,
   `home_team` varchar(3) NOT NULL,
-  `home_points` int(11) NOT NULL,
+  `home_points` int NOT NULL,
   `away_team` varchar(3) NOT NULL,
-  `away_points` int(11) NOT NULL,
+  `away_points` int NOT NULL,
   `stadium` varchar(100) NOT NULL,
   `location` varchar(100) NOT NULL,
-  `attendance` int(11) DEFAULT NULL,
-  `duration` int(11) NOT NULL,
+  `attendance` int DEFAULT NULL,
+  `duration` int NOT NULL,
   `start_time` varchar(45) NOT NULL,
   PRIMARY KEY (`game_id`),
   KEY `game_home_team_fk` (`home_team`),
@@ -223,10 +223,10 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `hurries_qb`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `hurries_qb` (
-  `play_id` int(11) NOT NULL,
-  `player_id` int(11) NOT NULL,
+  `play_id` int NOT NULL,
+  `player_id` int NOT NULL,
   `creation_date` varchar(45) NOT NULL,
   PRIMARY KEY (`play_id`,`player_id`,`creation_date`),
   KEY `hurries_qb_player_id_creation_date_fk_idx` (`player_id`,`creation_date`),
@@ -251,10 +251,10 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `is_bc_or_rec`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `is_bc_or_rec` (
-  `play_id` int(11) NOT NULL,
-  `player_id` int(11) NOT NULL,
+  `play_id` int NOT NULL,
+  `player_id` int NOT NULL,
   `creation_date` varchar(45) NOT NULL,
   PRIMARY KEY (`play_id`,`player_id`,`creation_date`),
   KEY `bc_rec_player_id_creation_date_fk_idx` (`player_id`,`creation_date`),
@@ -279,12 +279,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `is_kicker`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `is_kicker` (
-  `play_id` int(11) NOT NULL,
-  `player_id` int(11) NOT NULL,
+  `play_id` int NOT NULL,
+  `player_id` int NOT NULL,
   `creation_date` varchar(45) NOT NULL,
-  `kick_yardage` int(11) NOT NULL,
+  `kick_yardage` int NOT NULL,
   `kick_result` varchar(2) DEFAULT NULL,
   PRIMARY KEY (`play_id`,`player_id`,`creation_date`),
   KEY `is_kicker_player_id_creation_date_fk_idx` (`player_id`,`creation_date`),
@@ -309,10 +309,10 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `is_primary_def`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `is_primary_def` (
-  `play_id` int(11) NOT NULL,
-  `player_id` int(11) NOT NULL,
+  `play_id` int NOT NULL,
+  `player_id` int NOT NULL,
   `creation_date` varchar(45) NOT NULL,
   PRIMARY KEY (`play_id`,`player_id`,`creation_date`),
   KEY `is_primary_def_player_id_creation_date_fk_idx` (`player_id`,`creation_date`),
@@ -337,10 +337,10 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `is_secondary_def`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `is_secondary_def` (
-  `play_id` int(11) NOT NULL,
-  `player_id` int(11) NOT NULL,
+  `play_id` int NOT NULL,
+  `player_id` int NOT NULL,
   `creation_date` varchar(45) NOT NULL,
   PRIMARY KEY (`play_id`,`player_id`,`creation_date`),
   KEY `is_secondary_def_player_id_creation_date_fk_idx` (`player_id`,`creation_date`),
@@ -365,10 +365,10 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `issue`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `issue` (
   `client_username` varchar(20) NOT NULL,
-  `issue_id` int(11) NOT NULL AUTO_INCREMENT,
+  `issue_id` int NOT NULL AUTO_INCREMENT,
   `description` varchar(200) NOT NULL,
   `submission_date` datetime NOT NULL,
   PRIMARY KEY (`issue_id`),
@@ -393,9 +393,9 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `majors_in`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `majors_in` (
-  `player_id` int(11) NOT NULL,
+  `player_id` int NOT NULL,
   `creation_date` varchar(45) NOT NULL,
   `major` varchar(45) NOT NULL,
   PRIMARY KEY (`player_id`,`creation_date`,`major`),
@@ -419,10 +419,10 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `pass`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `pass` (
-  `play_id` int(11) NOT NULL,
-  `player_id` int(11) NOT NULL,
+  `play_id` int NOT NULL,
+  `player_id` int NOT NULL,
   `creation_date` varchar(45) NOT NULL,
   `pass_result` varchar(45) NOT NULL,
   PRIMARY KEY (`play_id`),
@@ -448,13 +448,13 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `penalty`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `penalty` (
-  `penalty_id` int(11) NOT NULL AUTO_INCREMENT,
-  `play_id` int(11) DEFAULT NULL,
-  `player_id` int(11) DEFAULT NULL,
+  `penalty_id` int NOT NULL AUTO_INCREMENT,
+  `play_id` int DEFAULT NULL,
+  `player_id` int DEFAULT NULL,
   `creation_date` varchar(45) DEFAULT NULL,
-  `penalty_yardage` int(11) DEFAULT NULL,
+  `penalty_yardage` int DEFAULT NULL,
   `penalty_type` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`penalty_id`),
   KEY `penalty_play_id_fk_idx` (`play_id`),
@@ -480,19 +480,19 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `play`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `play` (
-  `play_id` int(11) NOT NULL AUTO_INCREMENT,
-  `game_id` int(11) NOT NULL,
-  `quarter` int(11) NOT NULL,
+  `play_id` int NOT NULL AUTO_INCREMENT,
+  `game_id` int NOT NULL,
+  `quarter` int NOT NULL,
   `time` varchar(45) NOT NULL,
   `play_null` varchar(1) NOT NULL,
-  `field_position` int(11) NOT NULL,
+  `field_position` int NOT NULL,
   `description` varchar(255) DEFAULT NULL,
   `team_possession` varchar(3) NOT NULL,
-  `yardage_gained` int(11) DEFAULT NULL,
-  `down` int(11) NOT NULL,
-  `first_down_distance` int(11) NOT NULL,
+  `yardage_gained` int DEFAULT NULL,
+  `down` int NOT NULL,
+  `first_down_distance` int NOT NULL,
   `run_pass_flag` varchar(1) DEFAULT NULL,
   `ball_position` varchar(3) NOT NULL,
   `out_of_bounds` varchar(1) DEFAULT NULL,
@@ -522,16 +522,16 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `player`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `player` (
-  `player_id` int(11) NOT NULL AUTO_INCREMENT,
+  `player_id` int NOT NULL AUTO_INCREMENT,
   `creation_date` varchar(45) NOT NULL,
   `team_code` varchar(3) DEFAULT NULL,
   `player_name` varchar(45) DEFAULT NULL,
-  `jersey_number` int(11) DEFAULT NULL,
+  `jersey_number` int DEFAULT NULL,
   `height` varchar(5) DEFAULT NULL,
   `position` varchar(45) DEFAULT NULL,
-  `weight` int(11) DEFAULT NULL,
+  `weight` int DEFAULT NULL,
   `year` varchar(45) DEFAULT NULL,
   `hometown` varchar(45) DEFAULT NULL,
   `high_school_team` varchar(60) DEFAULT NULL,
@@ -557,10 +557,10 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `reviews`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `reviews` (
   `admin_username` varchar(20) NOT NULL,
-  `issue_id` int(11) NOT NULL,
+  `issue_id` int NOT NULL,
   `comment` varchar(200) NOT NULL,
   PRIMARY KEY (`admin_username`,`issue_id`),
   KEY `reviews_issue_id_fk_idx` (`issue_id`),
@@ -586,7 +586,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `team`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `team` (
   `team_code` varchar(3) NOT NULL,
   `team_name` varchar(45) NOT NULL,
@@ -623,7 +623,13 @@ DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` FUNCTION `getMostRecentCreationDateByPlayerId`(in_player_id int) RETURNS varchar(45) CHARSET utf8mb4
     READS SQL DATA
     DETERMINISTIC
-begin
+begin
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description:Get the most recent creation date for a given player ID
+--
+-- Returns: The most recent creation date
+-- =============================================================================
     DECLARE out_creation_date varchar(45);
     SELECT creation_date
     INTO out_creation_date
@@ -652,12 +658,23 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `addAdmin`(IN username varchar(20), 
                                                 IN permission_level int, OUT fail_msg varchar(100))
 this_proc:
 BEGIN
-    SET @v1 := (SELECT COUNT(1) FROM `admin` WHERE `admin`.username = username);
-    IF @v1 THEN
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Adds an admin to the the database
+--
+-- Returns: A failure message if an admin with the provided username already exists.
+-- =============================================================================
+
+-- Check if the username already exists, if so set the failure message and exit
+    SET @adminWithDuplicateUsernameExists := (SELECT COUNT(1) FROM `admin` WHERE `admin`.username = username);
+    IF @adminWithDuplicateUsernameExists THEN
         SET fail_msg := CONCAT('Username already exists: ', username);
         LEAVE this_proc;
     end if;
+    
+-- If the username does not already exist add it to the database
     INSERT INTO `admin` VALUES (username, password, permission_level);
+    
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -678,11 +695,21 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `addClient`(IN username varchar(20),
                                                  OUT fail_msg varchar(100))
 this_proc:
 begin
-    SET @v1 := (SELECT COUNT(1) FROM client WHERE client.username = username);
-    IF @v1 THEN
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Adds a client to the the database
+--
+-- Returns: A failure message if a client with the provided username already exists.
+-- =============================================================================
+
+-- Check if the username already exists, if so set the failure message and exit
+    SET @clientWithDuplicateUsernameExists := (SELECT COUNT(1) FROM client WHERE client.username = username);
+    IF @clientWithDuplicateUsernameExists THEN
         SET fail_msg := CONCAT('Username already exists: ', username);
         LEAVE this_proc;
     end if;
+    
+-- If the username does not already exist add it to the database
     INSERT INTO client values (username, password, current_timestamp());
 END ;;
 DELIMITER ;
@@ -705,11 +732,21 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `addCoachingStaffByTeam`(IN team_cod
                                                               OUT fail_msg varchar(100))
 this_proc:
 begin
-    SET @v1 := (SELECT COUNT(1) FROM team WHERE team.team_code = team_code);
-    IF NOT @v1 THEN
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Adds a coaching staff member to the the database
+--
+-- Returns: A failure message if the provided team code does not exist.
+-- =============================================================================
+
+-- Check if provided team code already exists, if not set the failure message and exit
+    SET @teamExists := (SELECT COUNT(1) FROM team WHERE team.team_code = team_code);
+    IF NOT @teamExists THEN
         SET fail_msg := CONCAT('Team not found: ', team_code);
         LEAVE this_proc;
     end if;
+    
+-- If the team code does exist add the coaching staff member to the database
     INSERT INTO coaching_staff VALUES (DEFAULT, team_code, first_name, last_name, position);
 END ;;
 DELIMITER ;
@@ -733,12 +770,22 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `addGame`(IN home_team varchar(3), I
                                                OUT fail_msg varchar(100))
 this_proc:
 begin
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Adds a game to the the database
+--
+-- Returns: A failure message if either of the provided team codes does not exist.
+-- =============================================================================
+
+-- Check if both team codes already exist, if not set the failure message and exit
     SET @team_codes_valid := (SELECT COUNT(1) FROM team WHERE team.team_code = home_team) AND
                              (SELECT COUNT(1) FROM team WHERE team.team_code = away_team);
     IF NOT @team_codes_valid THEN
         SET fail_msg := 'Invalid team_code provided';
         LEAVE this_proc;
     end if;
+    
+-- If the team codes do exist add the coaching staff member to the database
     INSERT INTO game VALUES(DEFAULT, home_team, home_points, away_team, away_points, stadium, location, attendance,
                             duration, start_time);
 end ;;
@@ -758,8 +805,15 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `addIssue`(IN client_username varchar(20), IN description varchar(200))
-begin
-   INSERT INTO issue VALUES (client_username, DEFAULT,  description, current_timestamp());
+begin
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Adds a issue to the the database
+-- =============================================================================
+
+-- Insert the issue with a default auto-incremented ID and the current time
+   INSERT INTO issue VALUES (client_username, DEFAULT,  description, current_timestamp());
+   
 end ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -777,7 +831,13 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `addMajor`(IN player_id int(11), IN creation_date varchar(45), IN major varchar(45))
-begin
+begin
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Adds a major to the the database
+-- =============================================================================
+
+-- Insert the major with the corresponding player and their creation date
     INSERT INTO majors_in
     VALUES (player_id, creation_date, major);
 end ;;
@@ -800,12 +860,24 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `addPenalty`(IN play_id int, IN pena
                                                   IN penalty_type varchar(45), OUT fail_msg varchar(100))
 this_proc:
 begin
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Adds a penalty to the the database
+--
+-- Returns: A failure message if the provided player ID does not exist.
+-- =============================================================================
+
+-- Check if provided player ID exists, if not set the failure message and exit
     SET @player_id_valid := (SELECT COUNT(1) FROM player WHERE player.player_id = penalty_player_id);
     IF NOT @player_id_valid THEN
         SET fail_msg := CONCAT('Player ID not found: ', penalty_player_id);
         LEAVE this_proc;
     end if;
+
+-- If the player ID does exist get the player record with the most recent creation date 
     SET @penalty_player_creation_date := getMostRecentCreationDateByPlayerId(penalty_player_id);
+    
+-- Insert the penalty with a default ID and the corresponding player ID and creation date
     INSERT INTO penalty values (DEFAULT, play_id,  penalty_player_id, @penalty_player_creation_date, penalty_yardage, penalty_type);
 end ;;
 DELIMITER ;
@@ -840,12 +912,22 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `addPlayByGameId`(IN game_id int, IN
                                                        OUT play_id int)
 this_proc:
 begin
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Adds a play to the the database by game ID
+--
+-- Returns: A failure message if the provided game ID, team codes, or player IDs
+-- do not exist.
+-- =============================================================================
+
+-- Check if provided game ID exists, if not set the failure message and exit
     SET @game_id_valid := (SELECT COUNT(1) FROM game WHERE game.game_id = game_id);
     IF NOT @game_id_valid THEN
         SET fail_msg := CONCAT('Game ID does not exist: ', game_id);
         LEAVE this_proc;
     end if;
 
+-- Check if all team codes already exist, if not set the failure message and exit
     SET @team_codes_valid := (SELECT COUNT(1) FROM team WHERE team.team_code = team_possession) AND
                              (SELECT COUNT(1) FROM team WHERE team.team_code = ball_position) AND
                              IF (in_calls_timeout IS NULL, 1, (SELECT COUNT(1) FROM team WHERE team.team_code = in_calls_timeout));
@@ -854,6 +936,7 @@ begin
         LEAVE this_proc;
     end if;
 
+-- Check if all player IDs already exist, if not set the failure message and exit
     SET @players_valid := IF (is_bc_or_rec_player_id IS NULL, 1, (SELECT COUNT(1) FROM player WHERE player.player_id = is_bc_or_rec_player_id)) AND
                           IF (is_kicker_player_id IS NULL, 1, (SELECT COUNT(1) FROM player WHERE player.player_id = is_kicker_player_id)) AND
                           IF (fum_player_id IS NULL, 1, (SELECT COUNT(1) FROM player WHERE player.player_id = fum_player_id)) AND
@@ -868,11 +951,15 @@ begin
         LEAVE this_proc;
     end if;
 
+-- Insert the play using the default auto-incremented value for play ID
     INSERT INTO play
     VALUES (DEFAULT, game_id, quarter, game_time, play_null, field_position, description, team_possession,
             yardage_gained, down, first_down_distance, run_pass_flag, ball_position, out_of_bounds);
+    
+-- Get the ID of the insert play so we can create all of it's relations
     SET play_id := (SELECT LAST_INSERT_ID());
 
+-- For all fields that need player information, get the most recent creation date for the provided player ID
     SET @is_bc_or_rec_creation_date := getMostRecentCreationDateByPlayerId(is_bc_or_rec_player_id);
     SET @is_kicker_creation_date := getMostRecentCreationDateByPlayerId(is_kicker_player_id);
     SET @fum_creation_date := getMostRecentCreationDateByPlayerId(fum_player_id);
@@ -882,6 +969,9 @@ begin
     SET @is_secondary_def_creation_date := getMostRecentCreationDateByPlayerId(is_secondary_def_player_id);
     SET @hurries_quarterback_creation_date := getMostRecentCreationDateByPlayerId(hurries_quarterback_player_id);
 
+
+-- If a creation date exists for the provided player IDs then that player exists in the database
+-- And we need to create the corresponding relations
     IF is_bc_or_rec_player_id is not NULL THEN
         INSERT INTO is_bc_or_rec
         VALUES (play_id, is_bc_or_rec_player_id, @is_bc_or_rec_creation_date);
@@ -945,14 +1035,27 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `addPlayer`(IN team_code varchar(3),
                                                  OUT player_id int, OUT creation_date varchar(45))
 this_proc:
 begin
-    SET @v1 := (SELECT COUNT(1) FROM team WHERE team.team_code = team_code);
-    IF NOT @v1 THEN
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Adds a player to the the database
+--
+-- Returns: A failure message if the provided team code does not exist.
+-- =============================================================================
+
+-- Check if provided team code already exists, if not set the failure message and exit
+    SET @teamExists := (SELECT COUNT(1) FROM team WHERE team.team_code = team_code);
+    IF NOT @teamExists THEN
         SET fail_msg := CONCAT('Team not found: ', team_code);
         LEAVE this_proc;
     end if;
+    
+-- If the team code does exist add the player to the database
     INSERT INTO player
     VALUES (DEFAULT, current_timestamp(), team_code, player_name, jersey_number, height, position, weight, year,
             hometown, high_school_team);
+            
+-- Set the out parameters based on the last inserted player's ID and creation date
+-- This will be used to call the addMajor stored procedure if the added player also has a major
     SET player_id := (SELECT LAST_INSERT_ID());
     SET creation_date := (SELECT player.creation_date FROM player WHERE player.player_id = (SELECT LAST_INSERT_ID()));
 END ;;
@@ -976,11 +1079,21 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `addTeam`(IN team_code varchar(3), I
                                                IN university varchar(45), OUT fail_msg varchar(100))
 this_proc:
 begin
-    SET @v1 := (SELECT COUNT(1) FROM team WHERE team.team_code = team_code);
-    IF @v1 THEN
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Adds a team to the the database
+--
+-- Returns: A failure message if the provided team code already exists.
+-- =============================================================================
+
+-- Check if the team code already exists, if so set the failure message and exit
+    SET @teamExists := (SELECT COUNT(1) FROM team WHERE team.team_code = team_code);
+    IF @teamExists THEN
         SET fail_msg := CONCAT('Team already exists: ', team_code);
         LEAVE this_proc;
     end if;
+
+-- If the team code does not already exist add it to the database
     INSERT INTO team VALUES (team_code, team_name, hometown, mascot, university);
 end ;;
 DELIMITER ;
@@ -1002,6 +1115,11 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `getAdminByUsername`(
 	IN username VARCHAR(20)
 )
 BEGIN
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Gets an admin by username
+-- =============================================================================
+
 SELECT * FROM `admin` WHERE `admin`.username = username;
 END ;;
 DELIMITER ;
@@ -1021,6 +1139,10 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getAdmins`()
 BEGIN
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Gets the admin table
+-- =============================================================================
     SELECT * FROM `admin`;
 END ;;
 DELIMITER ;
@@ -1040,6 +1162,11 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getClientByUsername`(IN username varchar(20))
 BEGIN
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Gets an client by username
+-- =============================================================================
+
     SELECT * FROM client WHERE client.username = username;
 END ;;
 DELIMITER ;
@@ -1059,6 +1186,10 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getClients`()
 BEGIN
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Gets the client table
+-- =============================================================================
     SELECT * FROM client;
 END ;;
 DELIMITER ;
@@ -1078,6 +1209,11 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getClientsFollowedByPlayer`(IN player_id int)
 begin
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Gets all clients followed by player using the player's ID
+-- =============================================================================
+
    SELECT *
    FROM follows
    JOIN client c on follows.username = c.username
@@ -1099,7 +1235,12 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getCoachingStaffById`(IN coaching_staff_id int)
-begin
+begin
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Gets a coaching staff member by ID
+-- =============================================================================
+
     SELECT *
     FROM coaching_staff
     WHERE coaching_staff.coaching_staff_id = coaching_staff_id;
@@ -1121,6 +1262,11 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getCoachingStaffByTeam`(IN team_code varchar(255))
 begin
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Gets all coaching staff by team code
+-- =============================================================================
+
     Select * FROM coaching_staff WHERE coaching_staff.team_code = team_code;
 end ;;
 DELIMITER ;
@@ -1139,7 +1285,11 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getGameById`(IN game_id int)
-begin
+begin
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Gets a game by game ID
+-- =============================================================================
     SELECT *
     FROM game
     WHERE game.game_id = game_id;
@@ -1167,7 +1317,30 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `getGameStatsById`(IN game_id int, O
                                                         OUT longest_kicker_name varchar(45))
 this_proc:
 begin
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Gets a game's statistics by game ID
+--
+-- Returns: All of the aggregate statistics for each game including:
+-- 			number_of_complete_passes,
+-- 			number_of_failed_passes,
+-- 			average_first_down_distance,
+-- 			number_of_fumbles,
+-- 			number_of_penalties,
+-- 			number_of_kicks,
+-- 			average_kick_yardage,
+-- 			longest_kicker_name
+--
+-- =============================================================================
+
+-- Drop the temporary table if it already exists
 DROP TABLE IF EXISTS joined_plays;
+
+-- Create a temporary table that has a play joined with all of its relations.
+-- Here we use left joins for all relations that may not exist. For example
+-- a play may not have a penalty but we still want to select the play to
+-- perform statistics. A temporary table is used so we can easily perform
+-- our calculations on it for the statistics.
 CREATE TEMPORARY TABLE joined_plays AS (
     SELECT play.play_id, pass_result, first_down_distance, fumble_yardage, penalty_id, kick_yardage, ik.player_id
     FROM (SELECT *
@@ -1178,6 +1351,9 @@ CREATE TEMPORARY TABLE joined_plays AS (
     LEFT OUTER JOIN pass on play.play_id = pass.play_id
     LEFT OUTER JOIN penalty pen on play.play_id = pen.play_id
 );
+
+
+-- Calculate all of the aggregate statistics using the temporary table
     SET number_of_complete_passes := (SELECT COUNT(*) FROM joined_plays WHERE joined_plays.pass_result = 'C');
     SET number_of_failed_passes := (SELECT COUNT(*) FROM joined_plays
                                         WHERE joined_plays.pass_result != 'C' AND joined_plays.pass_result IS NOT NULL);
@@ -1192,6 +1368,8 @@ CREATE TEMPORARY TABLE joined_plays AS (
                                     FROM joined_plays) AS max_kicker
                                     JOIN player ON player.player_id = pi);
 
+-- Select basic statistics from the game table. The application will join
+-- these game statistics with the aggregate statistics we calculated above.
     SELECT home_team, home_points, away_team, away_points
     FROM game
     WHERE game.game_id = game_id;
@@ -1212,7 +1390,12 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getIssueByID`(IN issue_id Integer)
-begin
+begin
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Gets a issue by ID
+-- =============================================================================
+
     SELECT * FROM issue WHERE issue.issue_id = issue_id;
 end ;;
 DELIMITER ;
@@ -1232,6 +1415,11 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getIssues`()
 begin
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Gets the issue table sorted by descending submission date
+-- =============================================================================
+
     SELECT * FROM issue ORDER BY submission_date DESC;
 end ;;
 DELIMITER ;
@@ -1251,6 +1439,11 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getIssuesByClientUsername`(IN client_username varchar(20))
 begin
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Gets issues submitted by a client sorted by descending submission date
+-- =============================================================================
+
     SELECT * FROM issue WHERE issue.client_username = client_username ORDER BY submission_date DESC;
 end ;;
 DELIMITER ;
@@ -1269,7 +1462,13 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getPenaltiesByGameId`(IN in_game_id int)
-begin
+begin
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Gets penalities for a game based on the provided game ID
+-- =============================================================================
+
+-- Join penalty with play so that we can join with game, allowing us to filter by game ID
     SELECT penalty_id, penalty.play_id, player_id, creation_date, penalty_yardage, penalty_type
     FROM penalty
     JOIN play p on penalty.play_id = p.play_id
@@ -1293,6 +1492,12 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getPlayById`(IN in_play_id int)
 begin
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Gets a play by ID
+-- =============================================================================
+
+-- Left join with all tables that may be related to the play
     SELECT *
     FROM play
              LEFT OUTER JOIN is_bc_or_rec ibor on play.play_id = ibor.play_id
@@ -1323,9 +1528,15 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getPlayerById`(IN in_player_id int)
 begin
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Gets the most recent player record by ID
+-- =============================================================================
+
+-- Left join with the majors table and return the player record with the most recent creation date
     SELECT *
     FROM player
-             JOIN majors_in ON player.player_id = majors_in.player_id and player.creation_date = majors_in.creation_date
+             LEFT JOIN majors_in ON player.player_id = majors_in.player_id and player.creation_date = majors_in.creation_date
     WHERE player.creation_date = (SELECT MAX(creation_date)
                                   FROM player
                                   WHERE player.player_id = in_player_id)
@@ -1348,6 +1559,12 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getPlayerHistory`(IN in_player_id int)
 begin
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Gets all player records for a specified player ID
+-- =============================================================================
+
+-- Left join with the majors table and return all player records with the matching player ID
     SELECT *
     FROM player
              LEFT JOIN majors_in
@@ -1372,6 +1589,11 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getPlayers`()
 BEGIN
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Gets the player table left joined with the majors_in table
+-- =============================================================================
+
     SELECT *
     FROM player
     LEFT JOIN majors_in ON player.player_id = majors_in.player_id and player.creation_date = majors_in.creation_date;
@@ -1393,6 +1615,11 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getPlayersFollowedByClient`(IN in_username varchar(20))
 begin
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Gets all players followed by client using the client's username
+-- =============================================================================
+
     SELECT *
     FROM player
     LEFT JOIN majors_in ON player.player_id = majors_in.player_id and player.creation_date = majors_in.creation_date
@@ -1415,6 +1642,12 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getPlaysByGameId`(IN game_id int)
 begin
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Gets all plays for a game by game ID
+-- =============================================================================
+
+-- Left join with all tables that may be related to each play
     SELECT *
     FROM play
     LEFT OUTER JOIN is_bc_or_rec ibor on play.play_id = ibor.play_id
@@ -1445,6 +1678,11 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getTeamByTeamCode`(IN team_code varchar(3))
 BEGIN
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Gets a team by team code
+-- =============================================================================
+
     SELECT *
     FROM team
     Where team.team_code = team_code;
@@ -1466,6 +1704,11 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getTeams`()
 BEGIN
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Gets the team table
+-- =============================================================================
+
     SELECT * FROM team;
 END ;;
 DELIMITER ;
@@ -1485,6 +1728,10 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `updateAdminPermissionLevel`(IN in_username varchar(20), IN new_permission_level int)
 BEGIN
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Updates an admin's permission level by admin username
+-- =============================================================================
     UPDATE `admin`
     SET `admin`.permission_level = new_permission_level
     WHERE `admin`.username = in_username;
@@ -1513,16 +1760,33 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `updatePlayerById`(IN team_code varc
                                                         OUT out_creation_date varchar(45))
 this_proc:
 begin
-    SET @v1 := (SELECT COUNT(1) FROM player WHERE player.player_id = player_id);
-    IF NOT @v1 THEN
+-- =============================================================================
+-- Create date: 3/22/2020
+-- Description: Updates a player by player ID
+--
+-- Returns: A failure message if the provided player ID or updated team code does
+-- 			not exist. If the procedure does not fail return the creation date
+-- 			of the new record so that the new player's major can be recorded in 
+-- 			the addMajor stored procedure.
+-- =============================================================================
+
+-- Check if provided player ID already exists, if not set the failure message and exit
+    SET @playerExists := (SELECT COUNT(1) FROM player WHERE player.player_id = player_id);
+    IF NOT @playerExists THEN
         SET fail_msg := CONCAT('Invalid player id provided: ', player_id);
         LEAVE this_proc;
     end if;
-    SET @v2 := (SELECT COUNT(1) FROM team WHERE team.team_code = team_code);
-    IF NOT @v2 THEN
+    
+-- Check if provided team code already exists, if not set the failure message and exit
+    SET @teamExists := (SELECT COUNT(1) FROM team WHERE team.team_code = team_code);
+    IF NOT @teamExists THEN
         SET fail_msg := CONCAT('Invalid team code provided: ', team_code);
         LEAVE this_proc;
     end if;
+    
+-- Create a new player record with the updated information using the same player ID but
+-- an updated creation date. This is done so that we can keep track of all the changes
+-- made to a player over time.
     INSERT INTO player
     VALUES (player_id, current_timestamp(), team_code, player_name, jersey_number, height, position, weight, year,
             hometown, high_school_team);
@@ -1547,4 +1811,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-04-15 20:39:09
+-- Dump completed on 2020-04-19 13:16:34
