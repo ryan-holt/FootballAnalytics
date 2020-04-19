@@ -2,7 +2,7 @@ import MySQLdb
 from flask import request
 from flask_restplus import Resource, marshal
 
-from models.admin import admin, admin_permission_level_parser
+from models.admin import admin, admin_permission_level_parser, get_admin_args
 from restplus import api, db
 
 ns = api.namespace('admins', description='Operations related to admins')
@@ -105,9 +105,3 @@ class Admin(Resource):
 
             connection.close()
         return {'message': "admin's permission level has been updated successfully."}, 200
-
-
-def get_admin_args(data):
-    return [data.get('username'),
-            data.get('password'),
-            data.get('permission_level')]
