@@ -30,7 +30,7 @@ def get_player_args(data):
             data.get('hometown'),
             data.get('high_school_team')]
 
-# TODO comment this
+# Formats the output json to display majors as a list
 def convert_major_to_list(results):
     new_results = []
     for row in results:

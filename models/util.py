@@ -2,7 +2,8 @@
 Contains helper functions for model classes.
 """
 
-# Checks if the permission level is an integer
+# Validates if an argument is an integer.
+# This function is used to validate if the permission level is an integer.
 def is_int():
     def validate(s):
         try:
@@ -13,7 +14,7 @@ def is_int():
 
     return validate
 
-# Check if a string is a certain characters long
+# Validates if a string is less than a specified maximum length
 def max_length(max_len):
     def validate(s):
         if len(s) <= max_len:

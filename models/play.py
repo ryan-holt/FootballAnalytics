@@ -134,7 +134,7 @@ def get_play_args(data):
             data.get('hurries_quarterback'),
             data.get('calls_timeout')]
 
-# TODO comment this
+# Formats the output json to display fumbles, passes and kicks as nested jsons
 def format_results(results):
     results = convert_penalty_to_list(results)
     for r in results:
@@ -159,7 +159,7 @@ def format_results(results):
         r['calls_timeout'] = r.pop('team_code')
     return results
 
-# TODO comment this
+# Formats the output json to display penalties as a list
 def convert_penalty_to_list(results):
     new_results = []
     for row in results:
