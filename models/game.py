@@ -58,3 +58,15 @@ def get_game_args(data):
             data.get('attendance'),
             data.get('duration'),
             data.get('start_time')]
+
+# Gets the out parameters for the get game statistics stored procedure
+def get_game_statistics_out_parameters(results, out_params):
+    results[0]['number_of_completed_passes'] = out_params[0]
+    results[0]['number_of_failed_passes'] = out_params[1]
+    results[0]['average_first_down_distance'] = out_params[2]
+    results[0]['number_of_fumbles'] = out_params[3]
+    results[0]['number_of_penalties'] = out_params[4]
+    results[0]['number_of_kicks'] = out_params[5]
+    results[0]['average_kick_yardage'] = out_params[6]
+    results[0]['longest_kicker_name'] = out_params[7]
+    return results

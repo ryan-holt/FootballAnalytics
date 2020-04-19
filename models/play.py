@@ -90,6 +90,7 @@ play = ns.model('play',
                  'penalties': fields.List(fields.Nested(penalty))
                  })
 
+
 # Gets arguments from API's input data
 def get_play_args(data):
     # Get all the data from a data object such as JSON
@@ -134,6 +135,7 @@ def get_play_args(data):
             data.get('hurries_quarterback'),
             data.get('calls_timeout')]
 
+
 # Formats the output json to display fumbles, passes and kicks as nested jsons
 def format_results(results):
     results = convert_penalty_to_list(results)
@@ -158,6 +160,7 @@ def format_results(results):
         r['secondary_defence'] = r.pop('isd.player_id')
         r['calls_timeout'] = r.pop('team_code')
     return results
+
 
 # Formats the output json to display penalties as a list
 def convert_penalty_to_list(results):

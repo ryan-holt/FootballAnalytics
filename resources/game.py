@@ -2,7 +2,7 @@ import MySQLdb
 from flask import request
 from flask_restplus import Resource, marshal
 
-from models.game import game_stats, game, get_game_args, game_post_model
+from models.game import game_stats, game, get_game_args, game_post_model, get_game_statistics_out_parameters
 from models.play import penalty, format_results, play
 from restplus import api, db
 
@@ -92,14 +92,7 @@ class Game(Resource):
             for i in range(1, 9):
                 cursor.execute('SELECT @_getGameStatsById_' + str(i))
                 out_params.append(cursor.fetchall()[0]['@_getGameStatsById_' + str(i)])
-            results[0]['number_of_completed_passes'] = out_params[0]
-            results[0]['number_of_failed_passes'] = out_params[1]
-            results[0]['average_first_down_distance'] = out_params[2]
-            results[0]['number_of_fumbles'] = out_params[3]
-            results[0]['number_of_penalties'] = out_params[4]
-            results[0]['number_of_kicks'] = out_params[5]
-            results[0]['average_kick_yardage'] = out_params[6]
-            results[0]['longest_kicker_name'] = out_params[7]
+            results = get_game_statistics_out_parameters(results, out_params)
         return marshal(results, game_stats), 200
 
 
